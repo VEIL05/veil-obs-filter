@@ -1,5 +1,12 @@
 # Models
 
+VEIL distribution scope: only `face_detector.onnx` and `face_landmarks.onnx`
+are shipped. The unchanged upstream documentation below also describes selfie
+segmentation assets; those two segmentation models and their converter are not
+included or used by VEIL. The exact shipped ONNX hashes and upstream commit are
+recorded in `PROVENANCE.json`. Model-card links describe the upstream models,
+not an additional VEIL grant or a claim that every listed file is bundled.
+
 The models in this directory are converted from open models released by Google MediaPipe under the
 Apache License 2.0 (full text in `LICENSE-Apache-2.0.txt`). Weights and network structure are unchanged;
 only the file format was converted from TFLite to ONNX.

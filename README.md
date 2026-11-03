@@ -64,12 +64,26 @@ fixture rendering path; it does not establish live-camera, encoding or long-run
 stability on every computer. Other operating systems and OBS versions are not
 verified targets.
 
-## Licenses and dependencies
+## Acknowledgements and licensing
 
-VEIL beauty code is GPL-2.0-or-later; the video adapter is GPL-3.0-or-later.
-Third-party components retain their own licenses, including MIT, Apache-2.0,
-GPL and Microsoft DirectML redistribution terms. Keep the supplied license and
-notice files with redistributed components.
+VEIL builds on the work of **[Face Beautifier](https://github.com/ctbot000/face-beautifier)**
+for beauty mathematics and **[Lumina Beauty](https://github.com/dinjufen/lumina-beauty)**
+for face tracking. Automatic person removal uses
+**[RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting)**;
+outline/chroma processing incorporates
+**[Advanced Masks](https://github.com/FiniteSingularity/obs-advanced-masks)**.
 
-See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md), the dependency provenance
-files, and [dependency source references](docs/BUILD.md#dependency-sources).
+See **[CREDITS.md](CREDITS.md)** for all adopted components, pinned versions,
+model/runtime authors and reference-only research. Full notices are in
+**[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)**.
+
+This is a multi-license source repository: the beauty integration uses
+GPL-2.0-or-later, the VEIL video integration uses GPL-3.0-or-later, and upstream
+components retain their own terms. **Microsoft DirectML is separately licensed
+Microsoft software, not an open-source component.** [LICENSE](LICENSE) and
+[the license map](docs/LICENSING.md) explain each scope.
+
+Pinned upstream source archives, local changes and rebuild dependencies are
+listed in **[dependency sources](docs/DEPENDENCY-SOURCES.md)**. No personal
+presets or camera captures are tracked. This publication does not create a
+binary installer Release.

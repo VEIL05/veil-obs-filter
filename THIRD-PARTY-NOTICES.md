@@ -1,113 +1,70 @@
-# VEIL OBS Filter 0.4.5
+# VEIL third-party notices
 
-This OBS plugin is licensed under GPL-2.0-or-later. Source accompanies the local
-distribution. It links to libobs; OBS Studio copyright belongs to its contributors.
-The plugin does not include or redistribute OBS Studio itself.
+VEIL 0.4.7 is a collection of separately licensed OBS modules, code adaptations,
+models and runtime dependencies. The scope is described in [LICENSE](LICENSE)
+and [docs/LICENSING.md](docs/LICENSING.md); third-party rights are unchanged.
+For a readable acknowledgement list, see [CREDITS.md](CREDITS.md).
+For exact source archives, versions, patches and rebuild inputs, see
+[docs/DEPENDENCY-SOURCES.md](docs/DEPENDENCY-SOURCES.md).
 
-## Face beauty mathematics and shaders
+## Adopted source
 
-ctbot000/face-beautifier, commit
-`ca5ad40b58e2d0133de6b22282b29000d3667046`, Copyright (c) 2026 CTBot000,
-MIT. https://github.com/ctbot000/face-beautifier
+| Upstream | Version / commit | VEIL use | Retained notice |
+| --- | --- | --- | --- |
+| [ctbot000/face-beautifier](https://github.com/ctbot000/face-beautifier) | `ca5ad40b58e2d0133de6b22282b29000d3667046` | Native port of beauty mathematics, shader regions, original control mappings and One Euro smoothing; VEIL adds native rasterisation, bounded shape/detail and OBS integration | [MIT, Copyright 2026 CTBot000](third_party/face-beautifier/LICENSE) |
+| [dinjufen/lumina-beauty](https://github.com/dinjufen/lumina-beauty) | `f1472d581dab9706c8536e0decd46592f9045d44` | CPU detector/478-point landmark decoding and rotated ROI tracking adapted; upstream renderer/segmentation not used | [MIT and scope](third_party/face-tracking/LICENSE-LUMINA.txt), [adaptation notice](third_party/face-tracking/NOTICE.md) |
+| [FiniteSingularity/obs-advanced-masks](https://github.com/FiniteSingularity/obs-advanced-masks) | `v1.6.1` | Three unchanged C components and original shaders in separate VEIL finishing helper; full original DLL retained for independent old filters | [GPL version 2](third_party/background-engines/advanced/UPSTREAM-LICENSE.txt), [file hashes](third_party/background-engines/advanced-components/PROVENANCE.json) |
 
-The original slider mappings, geometric warp, facial regions, skin/light/colour
-shader and One Euro coordinate smoothing are ported to C++/OBS effects. Canvas
-mask rasterisation is replaced by native scanline coverage and Gaussian blur.
-VEIL adds opt-in face length, eye spacing and nose length controls, skin light
-and redness adjustment, teeth whitening, lip gloss, colour looks, preview modes,
-and an overall strength blend. The warp capacity is extended to 24 handles.
-See Face-Beautifier-LICENSE.txt in the installed data/licenses directory.
+The finishing helper does not include the full module's Qt/SVG/Font Awesome or
+network integration. That statement describes the helper only; the retained
+complete upstream DLL remains governed by all its original component notices.
 
-## Face tracking
+## Models and runtime binaries
 
-dinjufen/lumina-beauty, commit `f1472d581dab9706c8536e0decd46592f9045d44`,
-MIT. https://github.com/dinjufen/lumina-beauty
+| Component | Version / asset | Use and license |
+| --- | --- | --- |
+| [Google MediaPipe](https://github.com/google-ai-edge/mediapipe), converted via pinned Lumina | `face_detector.onnx`, `face_landmarks.onnx` | Apache-2.0, only these two face assets shipped. [Model notice](models/NOTICE.md), [full license](models/LICENSE-Apache-2.0.txt), [hashes](models/PROVENANCE.json) |
+| [PeterL1n/RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting) | `v1.0.0`, MobileNetV3 FP32 ONNX | Active automatic person-removal model, unchanged. [GPL version 3](third_party/video-matting/data/licenses/RVM-GPL-3.0.txt) |
+| [PeterL1n/BackgroundMattingV2](https://github.com/PeterL1n/BackgroundMattingV2) | `v1.0.0`, MobileNetV2 HD ONNX | Historical adapter/model; inactive in normal product but asset remains included. [MIT, University of Washington 2020](third_party/video-matting/data/licenses/BMv2-MIT.txt) |
+| [kaito-tokyo/live-backgroundremoval-lite](https://github.com/kaito-tokyo/live-backgroundremoval-lite) | `4.0.1` | Unchanged official Windows DLL retained for old scenes. [GPL-3.0-or-later](third_party/background-engines/lite/UPSTREAM-LICENSE.txt); shader/locale annotations have separate Apache-2.0 terms in [REUSE.toml](third_party/background-engines/lite/data/REUSE.toml). Only `main.effect` has the documented [alpha patch](third_party/background-engines/lite-premultiplied-alpha.patch) |
+| [Microsoft ONNX Runtime](https://github.com/microsoft/onnxruntime) | CPU `1.31.1`, matting DirectML package `1.24.4` | MIT, original binaries and notices retained. [CPU license](third_party/onnxruntime/LICENSE), [CPU notices](third_party/onnxruntime/ThirdPartyNotices.txt), [matting license](third_party/video-matting/data/licenses/ONNX-Runtime-LICENSE.txt), [matting notices](third_party/video-matting/data/licenses/ONNX-Runtime-ThirdPartyNotices.txt). Matting DLL is renamed without changing its contents |
+| Microsoft DirectML | `Microsoft.AI.DirectML 1.15.4`, Windows x64 DLL | Separately licensed Microsoft software, **not open source**. [Microsoft terms](third_party/video-matting/data/licenses/DirectML-LICENSE.txt) and [third-party notices](third_party/video-matting/data/licenses/DirectML-ThirdPartyNotices.txt) retained. Windows/Xbox use and redistribution scope remain subject to those terms |
 
-Only the CPU detector/478-point landmark decoding and rotated ROI tracking are
-adapted. Internal adaptive smoothing was removed; one One Euro smoother runs in
-our worker. Lumina's OpenGL rendering/beauty/segmentation are not included.
-See LICENSE-LUMINA.txt and Face-Tracking-NOTICE.md.
+Pinned release and file hashes are in the [engine provenance](third_party/background-engines/PROVENANCE.json)
+and [matting provenance](third_party/video-matting/data/PROVENANCE.json).
+The Lite package's ncnn, CURL, fmt, wolfSSL, zlib and other supplied notices are
+retained in [its licenses directory](third_party/background-engines/lite/data/licenses).
+Their presence does not establish that every library is linked in every platform build.
 
-The two ONNX model files retain Apache-2.0 notices and pinned provenance in
-data/models/. They originate from Google's MediaPipe face models via Lumina.
+## SDK and compiler runtimes
 
-## ONNX Runtime
+VEIL links to the user's installed libobs. OBS Studio 33.0.1 SDK headers/import
+materials retain [OBS's GPL-2.0-or-later copying text](third_party/obs-sdk/obs-studio-33.0.1/COPYING).
+The OBS application itself is not bundled.
 
-Microsoft ONNX Runtime CPU Windows x64 1.31.1, MIT.
-https://github.com/microsoft/onnxruntime/releases/tag/v1.31.1
-The official binaries and their ThirdPartyNotices are included unchanged.
-The face tracker uses local CPU inference. Telemetry and spinning are disabled.
+LLVM-MinGW `20261020` UCRT x86_64 is a development prerequisite. Its libc++, unwind,
+MinGW and winpthreads runtimes are statically linked by the build. CMake copies
+their original license/exception notices from the pinned toolchain into packaged
+`data/licenses/`. [Build instructions](docs/BUILD.md) and the
+[bootstrap script](scripts/build/bootstrap_tools.py) pin the toolchain source/release.
 
-## Video matting (VEIL 0.4)
+## Reference-only work and test fixture
 
-Official PeterL1n/RobustVideoMatting v1.0.0 MobileNetV3 FP32 ONNX, GPL-3.0,
-https://github.com/PeterL1n/RobustVideoMatting. Official
-PeterL1n/BackgroundMattingV2 v1.0.0 MobileNetV2 HD ONNX, MIT,
-https://github.com/PeterL1n/BackgroundMattingV2. Models are unchanged. Both tagged
-source archives accompany the source ZIP, with model licenses and SHA256 provenance.
-The adapter follows their published tensor contracts and preserves RVM recurrent
-states. No BGOBS wrapper, phone/USB component, or external model service is used.
+[PyMatting](https://github.com/pymatting/pymatting)'s Shared Matting colour-line
+component is a mathematical reference for the independently implemented bounded
+projection in the retired reference-background feature. Its Python/Numba runtime
+and complete algorithm are not embedded. The [MIT notice](third_party/background-engines/PyMatting-MIT.txt)
+is retained as acknowledgement. BGOBS was used only for historical research and
+model-hash comparison; its wrapper, phone/USB/ADB code and updater are not bundled.
 
-Microsoft.ML.OnnxRuntime.DirectML 1.24.4 NuGet, MIT, and Microsoft.AI.DirectML
-1.15.4 redistributable, Microsoft DirectML terms. Only the Windows x64 release
-DLL is included. The unmodified ORT DLL is renamed veil-matting-ort.dll to isolate
-it from OBS's and the face tracker's runtime; it runs in a separate OBS module.
-Their licenses and third-party notices are under data/engines/video/data/licenses.
-ORT telemetry is disabled. Inference is local; GPU failure falls back to CPU.
-An empty background is stored only after the explicit registration button, in
-the module config backgrounds directory, and can be deleted in the same UI.
-No captured reference or user frames are included in source/delivery archives.
+The public NASA astronaut fixture comes from scikit-image `v0.21.0`; its original
+image and resized BGRA test derivative are development-only, not installed.
+[Fixture source, public-domain notice and hashes](third_party/face-tracking/NOTICE.md#public-test-fixture)
+are retained. No user camera/background image or OBS account data is part of this repository.
 
-## Compiler runtime
+## Current and archived features
 
-LLVM-MinGW UCRT 20261020 is a development tool, not required after installation.
-Its libc++/unwind/MinGW/winpthreads runtimes are statically linked. Their license
-and exception notices are included in data/licenses/.
-
-## Data and network
-
-The VEIL processor opens no independent camera and processes frames OBS supplies.
-The bundled Lite engine's automatic version-check and first-run flags are
-disabled for this bundled instance; updates are provided through VEIL. Existing
-independently installed upstream modules/configuration are reused as-is.
-The preset stores settings only, including original controls, additions, natural
-shape mode and background choices. It stores no frames or device IDs.
-The NASA astronaut public fixture is used only by development tests and is not
-installed. User camera images and OBS account/stream data are not packaged.
-
-## Background engines
-
-Live Background Removal Lite 4.0.1, Kaito Udagawa and contributors,
-GPL-3.0-or-later. https://github.com/kaito-tokyo/live-backgroundremoval-lite/releases/tag/4.0.1
-Official Windows binary is unchanged. The bundled `main.effect` has a documented
-premultiplied-alpha compatibility patch for chaining with OBS filters. Inference,
-guided refinement and temporal averaging are upstream implementations.
-Original corresponding source: `third_party/background-engines/lite-source.zip`.
-Its component notices (ncnn, wolfSSL, curl, fmt and others) are retained under
-`data/engines/lite/data/licenses`; the compiled MediaPipe model is upstream's.
-
-Advanced Masks 1.6.1, FiniteSingularity and contributors, GPL-2.0.
-https://github.com/FiniteSingularity/obs-advanced-masks/releases/tag/v1.6.1
-Official Windows binary/data are unchanged and retained for independently used
-Advanced Masks filters. VEIL0.4.5's small native finishing module compiles three
-unmodified GPL C components (mask-chroma-key.c, mask-feather.c, obs-utils.c) and
-uses the same bundled shaders. Its wrapper retains the upstream get_input_source
-operations, settings/update/render mathematics and alpha/color-space semantics,
-while giving managed helpers an informational properties page. Qt/SVG/Font
-Awesome/network code is not included in this helper. The complete original
-source archive accompanies the source distribution in
-`third_party/background-engines/advanced-source.zip`; selected unchanged file
-hashes are in `advanced-components/PROVENANCE.json`.
-
-Pinned release SHA-256 and per-file provenance are in `data/engines/PROVENANCE.json`.
-
-## Photo-guided soft-edge refinement reference
-
-The colour-line alpha projection is independently implemented in native C++
-following the mathematical component used by PyMatting Shared Matting. This does
-not embed the complete Shared Matting algorithm or its Python/Numba runtime.
-PyMatting copyright(c)2020 PyMatting, MIT license.
-Source: https://github.com/pymatting/pymatting/blob/master/pymatting/alpha/estimate_alpha_sm.py
-License: data/licenses/PyMatting-MIT.txt (also in source third_party/background-engines).
-Local validation adds photo-fit, colour/noise uncertainty, soft eligibility and
-8/255 correction guards; actual-camera quality is verified separately.
+Normal builds expose automatic person removal and chroma key. Captured-background
+registration is retired and disabled; its coherent historical implementation is
+preserved on `archive/registered-background`. Keeping its MIT model and notices
+in source/build assets does not mean that registration is a current product feature.

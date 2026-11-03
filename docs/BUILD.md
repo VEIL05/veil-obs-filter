@@ -105,7 +105,8 @@ URLs. The matting models come from the upstream RVM and BackgroundMattingV2
 v1.0.0 releases; their model digests were recorded locally because those legacy
 model releases do not supply vendor digests.
 
-Duplicate upstream source ZIPs are not tracked in Git. Preserve the corresponding
-upstream sources and patches when preparing a binary distribution; do not treat
-vendored DLLs and model files alone as a complete source distribution. The fuller
-source delivery and component notices remain the distribution references.
+Pinned Lite, Advanced Masks, RVM and BMv2 source ZIPs are tracked with their
+recorded hashes. See [dependency sources](DEPENDENCY-SOURCES.md) for the exact
+archives, integration patches, additional dependency registries, original model
+checkpoint/exporter references and rebuild boundaries. [LICENSING.md](LICENSING.md)
+explains module and asset scopes, including DirectML's separate terms.

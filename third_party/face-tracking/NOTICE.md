@@ -8,8 +8,8 @@ The algorithm in `src/face_tracker.cpp` is adapted from the MIT-licensed
 - Original source: https://github.com/dinjufen/lumina-beauty/blob/f1472d581dab9706c8536e0decd46592f9045d44/src/engine/LmFaceDetector.cpp
 - Copyright (c) 2026 Lumina Beauty contributors.
 - Full license: `LICENSE-LUMINA.txt` in this directory.
-- A pinned upstream source snapshot is retained under `upstream/` for review.
-  It is development/reference material, not required in the installed plugin.
+- The original source is available at the fixed-commit link above. A full Lumina
+  checkout is not bundled in this repository or required by the installed plugin.
 
 Only the detector, landmark ROI and tracking algorithm were reused. Lumina's
 OpenGL renderer, OBS plugin, effect engine and segmentation models are not used
