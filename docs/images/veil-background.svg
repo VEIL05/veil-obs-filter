@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">VEIL 배경 제거 — 내 배경에 맞춰 고르세요</title>
+  <desc id="desc">방 안의 인물에서 배경을 제거해 사람만 남기는 흐름을 그린 기능 안내 일러스트입니다. 일반 배경은 인물 필터, 초록 천은 크로마키를 선택하고 가장자리 필터로 윤곽을 다듬습니다. 실제 보정 전후 영상은 아닙니다.</desc>
+  <defs>
+    <pattern id="checks" width="28" height="28" patternUnits="userSpaceOnUse"><rect width="28" height="28" fill="#F9F7FD"/><path fill="#E7E1EF" d="M0 0h14v14H0zm14 14h14v14H14z"/></pattern>
+    <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#756491"/><stop offset="1" stop-color="#51445F"/></linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F2C9B8"/><stop offset="1" stop-color="#DFAB9B"/></linearGradient>
+    <clipPath id="before-clip"><rect x="64" y="112" width="432" height="274" rx="24"/></clipPath>
+    <clipPath id="after-clip"><rect x="704" y="112" width="432" height="274" rx="24"/></clipPath>
+    <g id="person">
+      <path d="M-78-39c-6-59 2-126 75-128 80-3 91 61 87 128l12 110H-91z" fill="#3A3147"/>
+      <path d="M-171 212c0-81 27-120 91-143l53-17h54l53 17c64 23 91 62 91 143z" fill="url(#shirt)"/>
+      <path d="M-39 64c11 23 67 23 78 0l-14-18h-50z" fill="#C69488"/>
+      <path d="M-25 22h50v40c0 21-50 21-50 0z" fill="url(#skin)"/>
+      <path d="M-60-73c0-62 120-62 120 0l-4 64c-3 37-31 64-56 64S-53 28-56-9z" fill="url(#skin)"/>
+      <path d="M-64-55c-15-48 6-96 63-96 57 0 81 39 67 94-14-8-27-25-34-44-17 27-55 44-96 46z" fill="#3A3147"/>
+      <path d="M-66-61c-9 24-7 48-4 70m137-70c9 24 7 48 4 70" fill="none" stroke="#3A3147" stroke-width="13" stroke-linecap="round"/>
+      <g fill="none" stroke="#59404A" stroke-linecap="round">
+        <path d="M-35-38c5-4 13-4 18-1m34 0c5-3 13-3 18 1" stroke-width="3"/>
+        <path d="M-34-24c5-5 12-5 17-1m34 0c5-4 12-4 17 1" stroke-width="2.6"/>
+        <path d="m0-20-4 20h7" stroke="#C28F81" stroke-width="2"/>
+        <path d="M-13 17c8 6 18 6 26 0" stroke="#A15F70" stroke-width="3"/>
+      </g>
+      <ellipse cx="-35" cy="0" rx="14" ry="7" fill="#E89CA3" fill-opacity=".45"/>
+      <ellipse cx="35" cy="0" rx="14" ry="7" fill="#E89CA3" fill-opacity=".45"/>
+      <path d="M-61 93c30 20 92 20 122 0m-68 23v96m-24-96-13 96m61-96 13 96" fill="none" stroke="#B2A2C4" stroke-opacity=".4" stroke-width="2"/>
+    </g>
+  </defs>
+  <rect width="1200" height="520" rx="32" fill="#FAF8FD"/>
+  <g font-family="Segoe UI, Malgun Gothic, sans-serif" fill="#141321">
+    <text x="64" y="48" font-size="15" font-weight="700" letter-spacing="2" fill="#625B73">VEIL / 배경 제거</text>
+    <text x="64" y="90" font-size="31" font-weight="700" letter-spacing="-.8">내 배경에 맞춰 고르세요</text>
+    <text x="1136" y="88" text-anchor="end" font-size="14" fill="#625B73">기능 안내 일러스트</text>
+  </g>
+
+  <g clip-path="url(#before-clip)">
+    <rect x="64" y="112" width="432" height="274" fill="#EDE6E0"/>
+    <rect x="64" y="331" width="432" height="55" fill="#D4C8C3"/>
+    <path d="M64 331h432" stroke="#C5B7B2"/>
+    <rect x="88" y="143" width="118" height="112" rx="3" fill="#FDF8F3"/>
+    <rect x="96" y="151" width="102" height="96" rx="1" fill="#D2E3E1"/>
+    <path d="M147 151v96M96 199h102" stroke="#FAF8F3" stroke-width="6"/>
+    <path d="M82 266h130" stroke="#C7B9B1" stroke-width="4" stroke-linecap="round"/>
+    <rect x="394" y="286" width="51" height="58" rx="5" fill="#CCB2A5"/>
+    <path d="M420 290v-70m-1 35c-24-3-32-18-27-32 22 0 30 13 27 32zm1-14c23-3 33-18 27-33-22 0-29 13-27 33z" fill="#7A9C87" stroke="#73907C" stroke-width="2"/>
+    <use href="#person" transform="translate(283 273) scale(.83)"/>
+  </g>
+  <rect x="64" y="112" width="432" height="274" rx="24" fill="none" stroke="#D8D0D9"/>
+
+  <g font-family="Segoe UI, Malgun Gothic, sans-serif" fill="#4F4760" text-anchor="middle">
+    <text x="600" y="222" font-size="16">사람만 남기기</text>
+    <path d="M548 253h102m-14-14 14 14-14 14" fill="none" stroke="#7B669A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="600" y="295" font-size="15" fill="#625B73">자동 배경 제거</text>
+  </g>
+
+  <g clip-path="url(#after-clip)">
+    <rect x="704" y="112" width="432" height="274" fill="url(#checks)"/>
+    <use href="#person" transform="translate(923 273) scale(.83)"/>
+  </g>
+  <rect x="704" y="112" width="432" height="274" rx="24" fill="none" stroke="#D8D0D9"/>
+  <g transform="translate(1071 138)" stroke="#3F7064" fill="#D8EEE5" stroke-width="1.5">
+    <circle r="18"/>
+    <path d="m-7 0 5 5 10-11" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g font-family="Segoe UI, Malgun Gothic, sans-serif">
+    <g transform="translate(64 418)">
+      <rect width="44" height="44" rx="15" fill="#E8DDF7"/>
+      <g fill="none" stroke="#5C4679" stroke-width="2" stroke-linecap="round"><circle cx="22" cy="15" r="6"/><path d="M11 33c0-14 22-14 22 0"/></g>
+      <text x="62" y="16" font-size="15" fill="#625B73">일반 배경</text>
+      <text x="62" y="44" font-size="21" font-weight="700" fill="#141321">VEIL 배경 · 인물</text>
+    </g>
+    <g transform="translate(450 418)">
+      <rect width="44" height="44" rx="15" fill="#D8EEE5"/>
+      <g fill="none" stroke="#3F7064" stroke-width="2" stroke-linecap="round"><rect x="11" y="10" width="22" height="24" rx="2"/><path d="M17 38h10m-5-4v4"/><path d="m17 20 3 3 7-8"/></g>
+      <text x="62" y="16" font-size="15" fill="#625B73">초록 천 · 단색 배경</text>
+      <text x="62" y="44" font-size="21" font-weight="700" fill="#141321">VEIL 배경 · 크로마키</text>
+    </g>
+    <g transform="translate(861 418)">
+      <rect width="44" height="44" rx="15" fill="#F6DEE5"/>
+      <g fill="none" stroke="#925264" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 33c0-18 7-26 21-22 4 14-4 21-21 22zm0 0 15-15m-8 8 1-8m4 3 8-1"/></g>
+      <text x="62" y="16" font-size="15" fill="#625B73">윤곽 부드러움</text>
+      <text x="62" y="44" font-size="21" font-weight="700" fill="#141321">VEIL 배경 · 가장자리</text>
+    </g>
+    <text x="64" y="497" font-size="14" fill="#625B73">인물과 크로마키 중 하나를 켜고, 필요하면 가장자리를 함께 사용하세요.</text>
+  </g>
+</svg>

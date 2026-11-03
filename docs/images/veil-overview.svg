@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">VEIL — 카메라는 그대로, 분위기는 나답게</title>
+  <desc id="desc">얼굴 디테일, 피부, 메이크업, 배경 제거를 소개하는 원본 벡터 일러스트입니다. 실제 OBS 화면이나 보정 전후 사진이 아닙니다.</desc>
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FCFAFF"/><stop offset="1" stop-color="#F1ECF8"/></linearGradient>
+    <linearGradient id="portrait" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E9E0FA"/><stop offset="1" stop-color="#F8DFE6"/></linearGradient>
+    <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#756491"/><stop offset="1" stop-color="#51445F"/></linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F2C9B8"/><stop offset="1" stop-color="#DFAB9B"/></linearGradient>
+    <pattern id="checks" width="28" height="28" patternUnits="userSpaceOnUse"><path fill="#F8F5FC" d="M0 0h28v28H0z"/><path fill="#E9E3F1" d="M0 0h14v14H0zm14 14h14v14H14z"/></pattern>
+    <clipPath id="portrait-clip"><rect x="596" y="98" width="536" height="428" rx="40"/></clipPath>
+  </defs>
+  <rect width="1200" height="620" rx="32" fill="url(#canvas)"/>
+  <g font-family="Segoe UI, Malgun Gothic, sans-serif" fill="#141321">
+    <text x="64" y="98" font-size="45" font-weight="700" letter-spacing="8">VEIL</text>
+    <text x="68" y="137" font-size="17" fill="#625B73" letter-spacing="1">OBS용 얼굴 보정 · 배경 제거</text>
+    <text x="64" y="221" font-size="44" font-weight="700" letter-spacing="-1.6">카메라는 그대로,</text>
+    <text x="64" y="279" font-size="44" font-weight="700" letter-spacing="-1.6">분위기는 나답게</text>
+
+    <g transform="translate(64 342)">
+      <rect width="48" height="48" rx="17" fill="#E8DDF7"/>
+      <g stroke="#5C4679" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 16c0-5 16-5 16 0v12c0 6-8 11-8 11s-8-5-8-11z"/>
+        <path d="M11 13v9m26-9v9M13 10h6m10 0h6M20 24h1m6 0h1m-6 7h4"/>
+      </g>
+      <text x="69" y="20" font-size="24" font-weight="700">얼굴 디테일</text>
+      <text x="69" y="45" font-size="16" fill="#625B73">얼굴 길이 · 눈 사이 · 코 길이</text>
+    </g>
+    <g transform="translate(64 416)">
+      <rect width="48" height="48" rx="17" fill="#F6DEE5"/>
+      <g stroke="#925264" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 10c-5 7-11 13-11 19a11 11 0 0 0 22 0c0-6-6-12-11-19z"/>
+        <path d="M18 29c0 4 2 6 5 6m12-21 1-4m2 8 4-1"/>
+      </g>
+      <text x="69" y="20" font-size="24" font-weight="700">피부</text>
+      <text x="69" y="45" font-size="16" fill="#625B73">매끄러움 · 질감 · 밝기</text>
+    </g>
+    <g transform="translate(64 490)">
+      <rect width="48" height="48" rx="17" fill="#DBEBE7"/>
+      <g stroke="#3F7064" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 27h14v12H17zm2 0V17l10-6v16M16 34h16"/>
+        <path d="m35 11 1-4m2 8 4-1"/>
+      </g>
+      <text x="69" y="20" font-size="24" font-weight="700">메이크업</text>
+      <text x="69" y="45" font-size="16" fill="#625B73">입술 · 볼 색 · 광택</text>
+    </g>
+  </g>
+
+  <g clip-path="url(#portrait-clip)">
+    <rect x="596" y="98" width="536" height="428" fill="url(#portrait)"/>
+    <circle cx="864" cy="315" r="176" fill="#FCF8FF" fill-opacity=".58"/>
+    <path d="M1032 98h100v428h-100z" fill="url(#checks)"/>
+    <path d="M1032 98v428" stroke="#FFF" stroke-width="2" stroke-opacity=".8"/>
+    <path d="M604 491c85-70 120-137 171-214" fill="none" stroke="#CBB8DE" stroke-width="1.5"/>
+    <path d="M634 520c92-92 131-149 167-209" fill="none" stroke="#CBB8DE" stroke-width="1.5"/>
+    <g transform="translate(853 326)">
+      <path d="M-78-39c-6-59 2-126 75-128 80-3 91 61 87 128l12 110H-91z" fill="#3A3147"/>
+      <path d="M-171 212c0-81 27-120 91-143l53-17h54l53 17c64 23 91 62 91 143z" fill="url(#shirt)"/>
+      <path d="M-39 64c11 23 67 23 78 0l-14-18h-50z" fill="#C69488"/>
+      <path d="M-25 22h50v40c0 21-50 21-50 0z" fill="url(#skin)"/>
+      <path d="M-60-73c0-62 120-62 120 0l-4 64c-3 37-31 64-56 64S-53 28-56-9z" fill="url(#skin)"/>
+      <path d="M-64-55c-15-48 6-96 63-96 57 0 81 39 67 94-14-8-27-25-34-44-17 27-55 44-96 46z" fill="#3A3147"/>
+      <path d="M-66-61c-9 24-7 48-4 70m137-70c9 24 7 48 4 70" fill="none" stroke="#3A3147" stroke-width="13" stroke-linecap="round"/>
+      <g fill="none" stroke="#59404A" stroke-linecap="round">
+        <path d="M-35-38c5-4 13-4 18-1m34 0c5-3 13-3 18 1" stroke-width="3"/>
+        <path d="M-34-24c5-5 12-5 17-1m34 0c5-4 12-4 17 1" stroke-width="2.6"/>
+        <path d="m0-20-4 20h7" stroke="#C28F81" stroke-width="2"/>
+        <path d="M-13 17c8 6 18 6 26 0" stroke="#A15F70" stroke-width="3"/>
+      </g>
+      <ellipse cx="-35" cy="0" rx="14" ry="7" fill="#E89CA3" fill-opacity=".45"/>
+      <ellipse cx="35" cy="0" rx="14" ry="7" fill="#E89CA3" fill-opacity=".45"/>
+      <path d="M-61 93c30 20 92 20 122 0m-68 23v96m-24-96-13 96m61-96 13 96" fill="none" stroke="#B2A2C4" stroke-opacity=".4" stroke-width="2"/>
+    </g>
+    <g stroke="#FFF" stroke-width="2" stroke-linecap="round" fill="none">
+      <path d="M712 190h-20v20m304-20h20v20M692 394v20h20m304-20v20h-20"/>
+    </g>
+    <path d="m1028 196 4-13 4 13 13 4-13 4-4 13-4-13-13-4z" fill="#FFF"/>
+    <circle cx="1055" cy="174" r="4" fill="#FFF"/>
+  </g>
+  <rect x="596" y="98" width="536" height="428" rx="40" fill="none" stroke="#DAD1E7"/>
+  <g font-family="Segoe UI, Malgun Gothic, sans-serif">
+    <rect x="785" y="442" width="310" height="102" rx="24" fill="#D8EEE5"/>
+    <g transform="translate(809 465)" fill="none" stroke="#315F52" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M0 9V0h9m26 0h9v9m0 26v9h-9M9 44H0v-9"/>
+      <circle cx="22" cy="15" r="7"/><path d="M9 35c0-15 26-15 26 0"/>
+    </g>
+    <text x="872" y="480" font-size="24" font-weight="700" fill="#214F43">배경 제거</text>
+    <text x="872" y="510" font-size="16" fill="#315F52">인물 · 가장자리 · 크로마키</text>
+    <text x="68" y="587" font-size="17" fill="#625B73">원하는 만큼, 한 항목씩.</text>
+    <text x="1132" y="587" text-anchor="end" font-size="14" fill="#625B73">기능 안내 일러스트</text>
+  </g>
+</svg>

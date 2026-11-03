@@ -84,6 +84,20 @@ private destination under the checkout:
 
 Close OBS before installing or updating. The installer protects files in use.
 
+## Public release builds
+
+Build a public installer from a clean checkout of the release tag. Do not copy an
+existing personal build or local delivery ZIP into a public release. A clean
+checkout has no ignored personal preset, so CMake packages `presets/neutral.json`.
+Before packaging, verify that `dist/obs-trueitem-beauty/data/user-preset.json`
+matches that neutral file byte for byte. Retain the complete compatibility payload
+and license files; the installer and old OBS scenes rely on those modules.
+
+Publish `VEIL-OBS-Filter-Setup.exe`, a source ZIP created with `git archive` from
+the same release tag, and `SHA256SUMS.txt` together. The source ZIP includes the
+pinned upstream source archives and dependency-source index. The public release
+does not include local presets, reference photos, OBS profiles, logs or toolchains.
+
 ## Dependency sources
 
 Versions, upstream URLs, hashes and licenses are recorded with the vendored

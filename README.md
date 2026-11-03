@@ -1,89 +1,82 @@
-# VEIL · OBS Filter 0.4.7
+# VEIL 필터
 
-VEIL is a native Windows x64 OBS filter for face detail, skin, makeup, colour and
-background removal. It processes an existing OBS source locally: no browser,
-second camera connection or image upload is required.
+OBS에서 얼굴·피부·메이크업을 다듬고, 배경을 깔끔하게 정리하세요.
+기존 카메라 소스에 필터를 추가해 바로 조절할 수 있습니다.
 
-## Use VEIL
+**[Windows 설치 파일 받기](https://github.com/VEIL05/veil-obs-filter/releases/latest/download/VEIL-OBS-Filter-Setup.exe)** · [최신 버전 안내](https://github.com/VEIL05/veil-obs-filter/releases/latest)
 
-Run `VEIL-OBS-Filter-Setup.exe`, then open a camera source's **Filters** in OBS and
-add **VEIL 필터 · 얼굴·피부·메이크업**. Choose a settings section to adjust its controls.
+현재 버전 **0.4.7** · **Windows 64비트용** · OBS Studio **33.0.1**에서 확인했습니다.
 
-Use **배경 필터 추가** in the background section to add missing background filters.
-Each filter has its own controls:
+![VEIL 기능 개요: 얼굴 디테일, 피부, 메이크업과 배경 제거를 원하는 만큼 조절합니다. 기능 안내 일러스트입니다.](docs/images/veil-overview.svg)
 
-| Filter | Purpose |
-| --- | --- |
-| VEIL 배경 · 인물 | Remove an ordinary background and reduce outline flicker. |
-| VEIL 배경 · 가장자리 | Soften the outline. |
-| VEIL 배경 · 크로마키 | Remove a green screen or another solid-colour background. |
+## 처음 시작하기
 
-Enable the person filter or the chroma-key filter for the background you use.
-Background controls live in those filters. Existing filter identifiers and saved
-settings remain compatible with earlier VEIL scenes.
+1. **OBS를 완전히 종료**하고 `VEIL-OBS-Filter-Setup.exe`를 실행합니다.
+2. **VEIL 설치**를 누릅니다. 이미 설치되어 있으면 **VEIL 업데이트**가 표시됩니다.
+3. OBS를 다시 열고, 사용할 **카메라 소스 → 필터**를 엽니다.
+4. 필터 목록의 **＋**에서 **VEIL 필터 · 얼굴·피부·메이크업**을 추가합니다.
 
-## Features
+필터를 선택한 뒤 **조절할 항목**에서 피부, 얼굴 디테일, 메이크업, 빛·색감을 고르세요.
+슬라이더를 움직이면 영상에 바로 반영됩니다. 얼굴 모양은 작은 값부터 조절하는 것을 권합니다.
 
-- Face shape and detail, including eye spacing, face length and nose length.
-- Skin smoothing and texture, brightness, redness reduction and teeth whitening.
-- Lip and blush colours, lip gloss, colour looks, mirror and overall strength.
-- Original, split and mask views, built-in presets and JSON import/export.
-- Automatic person removal with GPU acceleration and CPU fallback, plus separate
-  outline smoothing and solid-colour keying.
-- Local OBS settings persistence and a Windows installer with update, rollback
-  and protection against replacing files while OBS is running.
+업데이트할 때도 OBS를 종료한 뒤 같은 설치 파일을 실행하세요.
 
-The current product uses automatic person removal. Captured-background removal
-is retained as archived development work and is disabled in the normal build;
-see [the feature boundary](features/registered-background/README.md).
+## 배경 제거하기
 
-## Build
+![일반 배경은 VEIL 배경 · 인물, 초록 천은 크로마키, 윤곽 부드러움은 가장자리를 선택합니다. 기능 안내 일러스트입니다.](docs/images/veil-background.svg)
 
-The supported build target is **Windows x64 with OBS Studio 33.0.1** installed in
-its normal location. The source checkout includes pinned runtime dependencies,
-models, OBS headers and their notices. A neutral preset is supplied; personal
-presets and camera images are not part of the repository.
+VEIL 필터의 **조절할 항목 → 배경 제거 → 배경 필터 추가**를 누르세요.
+왼쪽 필터 목록에 추가된 항목에서 필요한 기능을 선택합니다.
 
-See [Build from a checkout](docs/BUILD.md) for prerequisites and the full sequence.
-After preparing the local toolchain:
+| 하고 싶은 일 | 선택할 필터 | 조절할 내용 |
+| --- | --- | --- |
+| 일반 배경에서 사람만 남기기 | **VEIL 배경 · 인물** | 자동 배경 제거, 윤곽의 떨림 줄이기 |
+| 머리카락·어깨 윤곽을 부드럽게 다듬기 | **VEIL 배경 · 가장자리** | 윤곽 부드러움 |
+| 초록 천 등 단색 배경 지우기 | **VEIL 배경 · 크로마키** | 지울 색, 허용 범위, 경계와 색 번짐 |
 
-```powershell
-./build.ps1
-./tests/run-gpu-smoke.ps1 -PresetPath ./presets/neutral.json -Width 1280 -Height 720 -OutputDirectory ./work/gpu-check
-./tests/run-background-smoke.ps1 -Width 1280 -Height 720 -OutputDirectory ./work/background-check
-./installer/build-installer.ps1
-```
+배경에 맞게 **인물** 또는 **크로마키** 중 하나를 켜고, 필요하면 **가장자리**를 함께 사용하세요.
+각 필터 왼쪽의 **눈 아이콘**으로 효과를 켜거나 끌 수 있습니다.
 
-`build.ps1` compiles, runs CTest and creates `dist/obs-trueitem-beauty`; it does not
-install into OBS. The installer is written to
-`installer/out/VEIL-OBS-Filter-Setup.exe`.
+새 배경으로 쓸 사진·영상은 OBS 소스 목록에서 **카메라 아래**에 놓으세요.
+빈 배경을 미리 촬영하거나 등록할 필요는 없습니다.
 
-The smoke checks run an independent libobs process with a public NASA image.
-They do not open a camera or load an OBS profile. Passing them verifies the
-fixture rendering path; it does not establish live-camera, encoding or long-run
-stability on every computer. Other operating systems and OBS versions are not
-verified targets.
+## 내게 맞게 조절하기
 
-## Acknowledgements and licensing
+- **얼굴·피부** — 얼굴 길이, 눈 사이, 코 길이, 피부 매끄러움과 질감 등을 조절합니다. 얼굴 길이·눈 사이·코 길이는 **0이 원래 모습**입니다.
+- **메이크업·색감** — 입술과 볼 색, 광택, 밝기와 색감을 조절합니다. **전체 보정**으로 얼굴·색감 보정의 강도를 한 번에 바꿀 수 있습니다.
+- **설정 보관** — **프리셋 관리**에서 설정을 파일로 저장하고 다시 불러올 수 있습니다. OBS도 장면에 현재 필터 값을 저장합니다.
 
-VEIL builds on the work of **[Face Beautifier](https://github.com/ctbot000/face-beautifier)**
-for beauty mathematics and **[Lumina Beauty](https://github.com/dinjufen/lumina-beauty)**
-for face tracking. Automatic person removal uses
-**[RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting)**;
-outline/chroma processing incorporates
-**[Advanced Masks](https://github.com/FiniteSingularity/obs-advanced-masks)**.
+**원본 확인·좌우 비교·마스크 확인 화면은 방송과 녹화에도 표시됩니다.**
+비교를 마치면 보기를 **보정 영상**으로 돌려놓으세요.
 
-See **[CREDITS.md](CREDITS.md)** for all adopted components, pinned versions,
-model/runtime authors and reference-only research. Full notices are in
-**[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)**.
+## 도움이 필요할 때
 
-This is a multi-license source repository: the beauty integration uses
-GPL-2.0-or-later, the VEIL video integration uses GPL-3.0-or-later, and upstream
-components retain their own terms. **Microsoft DirectML is separately licensed
-Microsoft software, not an open-source component.** [LICENSE](LICENSE) and
-[the license map](docs/LICENSING.md) explain each scope.
+- **필터가 목록에 없어요** — 설치가 끝난 뒤 OBS를 완전히 종료했다가 다시 열어 주세요. 이 배포는 Windows 64비트와 OBS Studio 33.0.1을 기준으로 확인했습니다.
+- **배경 제거가 멈추거나 인물이 사라져요** — **VEIL 배경 · 인물 → 다시 시작**을 누르세요. 현재 상태는 **상태 새로고침**에서 확인할 수 있습니다.
+- **이전 설치로 돌아가고 싶어요** — OBS를 종료하고 설치 파일의 **설치 되돌리기**를 누르세요. 업데이트 전 설치로 복원하며, 처음 설치한 경우에는 VEIL을 제거합니다.
 
-Pinned upstream source archives, local changes and rebuild dependencies are
-listed in **[dependency sources](docs/DEPENDENCY-SOURCES.md)**. No personal
-presets or camera captures are tracked. This publication does not create a
-binary installer Release.
+해결되지 않으면 [문제 제보](https://github.com/VEIL05/veil-obs-filter/issues)에 OBS 버전, 카메라 모델, 문제가 생긴 순서를 알려 주세요.
+더 자세한 조작은 [빠른 사용법](사용법.txt)을 참고하세요.
+
+## 사용한 프로젝트와 라이선스
+
+VEIL은 여러 오픈소스 프로젝트의 작업을 바탕으로 만듭니다.
+
+- [Face Beautifier](https://github.com/ctbot000/face-beautifier) — 얼굴·피부 보정 수학과 처리 방식
+- [Lumina Beauty](https://github.com/dinjufen/lumina-beauty) — 얼굴 추적
+- [RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting) — 자동 인물 배경 제거
+- [Advanced Masks](https://github.com/FiniteSingularity/obs-advanced-masks) — 가장자리·크로마키 처리
+
+전체 사용·참고 프로젝트와 적용 범위는 [CREDITS.md](CREDITS.md), 원문 고지는 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)에 정리했습니다.
+
+라이선스는 구성요소별로 적용됩니다. VEIL 얼굴 보정 통합은 GPL-2.0-or-later,
+VEIL 인물 처리 통합은 GPL-3.0-or-later이며, 외부 코드·모델은 각각의 원래 조건을 유지합니다.
+**Microsoft DirectML에는 Microsoft의 별도 사용·재배포 조건이 적용됩니다.**
+자세한 범위는 [LICENSE](LICENSE)와 [라이선스 안내](docs/LICENSING.md)를 확인하세요.
+
+## 개발·소스 안내
+
+[직접 빌드하기](docs/BUILD.md) · [원본 소스·버전·빌드 의존성](docs/DEPENDENCY-SOURCES.md)
+
+현재 배포는 자동 인물 배경 제거를 사용합니다. 배경 사진을 등록하는 이전 기능은
+[보관 기능 안내](features/registered-background/README.md)와 별도 보관 브랜치에 남겨 두었습니다.
