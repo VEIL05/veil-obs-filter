@@ -1,0 +1,22 @@
+--- upstream-4.0.1/data/effects/main.effect
++++ veil/data/effects/main.effect
+@@ -97,6 +97,8 @@
+ 
+ 	final_color.rgb = image.Sample(point_sampler, uv).rgb;
+ 	final_color.a = image1.Sample(linear_sampler, uv).r;
++	// VEIL compatibility: preserve OBS premultiplied-alpha filter contract.
++	final_color.rgb *= final_color.a;
+ 
+ 	return final_color;
+ }
+@@ -147,7 +149,9 @@
+ 	float final_alpha = smoothstep(lowerBound, upperBound, gamma_corrected_mask);
+ 
+ 	// 4. Return the final composited color
+-	return float4(final_rgb, final_alpha);
++	// VEIL compatibility: OBS filter chains carry premultiplied RGBA.
++	// Keep this at the upstream shader boundary; the segmenter is unchanged.
++	return float4(final_rgb * final_alpha, final_alpha);
+ }
+ 
+ float4 PSDrawWithRefinedBlurredBackground(VertInOut vert_in) : TARGET

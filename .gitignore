@@ -1,0 +1,19 @@
+# Local runtime, private user state, and generated products
+/.runtime/
+/work/
+/dist/
+/installer/work/
+/installer/out/
+/third_party/toolchain/
+/.venv/
+__pycache__/
+*.pyc
+*.pdb
+*.zip
+*.veilbg
+.env
+.env.*
+/presets/trueitem-user-*.json
+
+# Recreated SDK/build artifacts; the checked-in import subset is intentional.
+/third_party/obs-sdk/obs-studio-33.0.1/.git/

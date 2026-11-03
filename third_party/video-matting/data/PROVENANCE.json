@@ -1,0 +1,69 @@
+{
+  "inputs": [
+    {
+      "url": "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime.directml/1.24.4/microsoft.ml.onnxruntime.directml.1.24.4.nupkg",
+      "file": "ort-directml-1.24.4.zip",
+      "bytes": 12458649,
+      "sha256": "57e9f11b73437bef7a309496135d4c1f96b1a8e9ddba60013fa27bfc1d788681"
+    },
+    {
+      "url": "https://api.nuget.org/v3-flatcontainer/microsoft.ai.directml/1.15.4/microsoft.ai.directml.1.15.4.nupkg",
+      "file": "directml-1.15.4.zip",
+      "bytes": 202292617,
+      "sha256": "4e7cb7ddce8cf837a7a75dc029209b520ca0101470fcdf275c1f49736a3615b9"
+    },
+    {
+      "url": "https://github.com/PeterL1n/RobustVideoMatting/releases/download/v1.0.0/rvm_mobilenetv3_fp32.onnx",
+      "file": "rvm.onnx",
+      "bytes": 14975696,
+      "sha256": "88d4531297118f595bf2fd60f6f566aec2e559393802d1f436c380f0cbbd2828"
+    },
+    {
+      "url": "https://github.com/PeterL1n/BackgroundMattingV2/releases/download/v1.0.0/onnx_mobilenetv2_hd.onnx",
+      "file": "bmv2.onnx",
+      "bytes": 20007646,
+      "sha256": "6d6c3fbecbc330d070c3d89c7542ef476f849e7d5e7e8c914f85ba5730d744dd"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/PeterL1n/RobustVideoMatting/master/LICENSE",
+      "file": "RVM-LICENSE.txt",
+      "bytes": 35148,
+      "sha256": "8b1ba204bb69a0ade2bfcf65ef294a920f6bb361b317dba43c7ef29d96332b9b"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/PeterL1n/BackgroundMattingV2/master/LICENSE",
+      "file": "BMv2-LICENSE.txt",
+      "bytes": 1081,
+      "sha256": "0c2ff594a48a7a6c312a01feb54c667bd4ff2f8b51078bd25f498502358906f3"
+    }
+  ],
+  "digest_note": "SHA256 recorded locally; legacy upstream model releases do not publish digests. BMv2 also compared with pinned BGOBS package.",
+  "model_crosscheck": "BMv2 official release SHA256 equals SHA256 within verified BGOBS0.3.26 release archive",
+  "files": {
+    "bmv2-source.zip": "f8bd03b63cebd6edbad860ce18b8422392dd330bad9216232b0808ea6566e906",
+    "rvm-source.zip": "b58b1187fb9373f56db2e463a7629cf9f539c4c97ea361c793620396211122da",
+    "include/cpu_provider_factory.h": "e2f658eeace78d79a8df82f233dcdeea135db498a77766156054bfc0d1d06c21",
+    "include/dml_provider_factory.h": "e0bf35c3a45df1e41aa3659d8502ca525a669134c0f537a549ff555ae8c12261",
+    "include/onnxruntime_cxx_api.h": "e87667c6b012dbc558d30f9ba20c0c45409115250cf464d239289ffdaad64af2",
+    "include/onnxruntime_cxx_inline.h": "4384055d20a0f329e5201c26a3b8cc39961c19aa0816bbe7062de21919261696",
+    "include/onnxruntime_c_api.h": "7f03541b0233c53b8c91855910c9382c4fb4a26b8fe099965c7c3cad1af2ced6",
+    "include/onnxruntime_env_config_keys.h": "e56d37fd1e6497e9c8e8e5bd81732cd5414b4dc0867f3e8badb60101502d0435",
+    "include/onnxruntime_ep_c_api.h": "7de0ebae527f18b39fbeb3129d5781a995e76f685842c2e16aa0468230e6368b",
+    "include/onnxruntime_ep_device_ep_metadata_keys.h": "1c38be37547202840fa73207b3e572bbb1d40ce676523ff8ae04254226c75f27",
+    "include/onnxruntime_float16.h": "9b45e1bc0fe19d9d53f272b168f5cab616e26eb00136c3a1b78f394c9b1b6757",
+    "include/onnxruntime_lite_custom_op.h": "dc8c07b23fa4f3de619f23e793ea965be922d52add62409866ce7aef03acec01",
+    "include/onnxruntime_run_options_config_keys.h": "38cfec5817e67990f242bbf7177db730a4d60f5ed256b4832f02ac38c3fd6d06",
+    "include/onnxruntime_session_options_config_keys.h": "c8f53bc7723293fee23fcb606e6a2199d1588abcebd539a50e690d4607e00af5",
+    "include/provider_options.h": "74f8accd5b30fbfe8abb24ca279e634657b446bf5b9be520badaaebcea63cade",
+    "bin/64bit/DirectML.dll": "9c9e6d822561c6c41b90e6994b3e8857cf1d66dbfb1e0c4c799c7c89b4e92da1",
+    "bin/64bit/veil-matting-ort.dll": "e7eedec6a6f26dc39dc948276a75ef6d2bee3fff944d874ceed0bbd3b97bff40",
+    "data/licenses/BMv2-MIT.txt": "0c2ff594a48a7a6c312a01feb54c667bd4ff2f8b51078bd25f498502358906f3",
+    "data/licenses/DirectML-LICENSE.txt": "a05138e3a085ff60a44881eedfa58dccb03ecc1d7b1f6ae888418e8c2fec4b8d",
+    "data/licenses/DirectML-ThirdPartyNotices.txt": "2c95795c13ff48a58b6ed916f37901c23d964b5d9d601af422f17ad2172e7950",
+    "data/licenses/ONNX-Runtime-LICENSE.txt": "c250d6278f0b47a6439fb7592b08b58a55eb9f535aa49a1db63211c3f982b674",
+    "data/licenses/ONNX-Runtime-ThirdPartyNotices.txt": "fb0af774b4d7cffc5b9d046f2aaeade2f37df2f80abf8033c95dfffcc77a8866",
+    "data/licenses/RVM-GPL-3.0.txt": "8b1ba204bb69a0ade2bfcf65ef294a920f6bb361b317dba43c7ef29d96332b9b",
+    "data/models/bmv2.onnx": "6d6c3fbecbc330d070c3d89c7542ef476f849e7d5e7e8c914f85ba5730d744dd",
+    "data/models/rvm.onnx": "88d4531297118f595bf2fd60f6f566aec2e559393802d1f436c380f0cbbd2828"
+  }
+}

@@ -1,0 +1,10 @@
+# Task-local, relocatable Windows x64 UCRT toolchain. No global PATH changes.
+set(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_SYSTEM_PROCESSOR AMD64)
+set(TRUEITEM_LLVM_ROOT "${CMAKE_CURRENT_LIST_DIR}/third_party/toolchain/llvm-mingw-20261020-ucrt-x86_64")
+set(CMAKE_C_COMPILER "${TRUEITEM_LLVM_ROOT}/bin/x86_64-w64-mingw32-clang.exe")
+set(CMAKE_CXX_COMPILER "${TRUEITEM_LLVM_ROOT}/bin/x86_64-w64-mingw32-clang++.exe")
+set(CMAKE_RC_COMPILER "${TRUEITEM_LLVM_ROOT}/bin/x86_64-w64-mingw32-windres.exe")
+set(CMAKE_AR "${TRUEITEM_LLVM_ROOT}/bin/llvm-ar.exe")
+set(CMAKE_RANLIB "${TRUEITEM_LLVM_ROOT}/bin/llvm-ranlib.exe")
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)

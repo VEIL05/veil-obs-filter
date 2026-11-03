@@ -1,0 +1,14 @@
+{
+  "source_commit": "f1472d581dab9706c8536e0decd46592f9045d44",
+  "source_repository": "https://github.com/dinjufen/lumina-beauty",
+  "files": {
+    "face_detector.onnx": {
+      "sha256": "077a3a07b13f661ecace364866ddc45facaa9cb05cc25f5cad8a1d5364e6c316",
+      "bytes": 418459
+    },
+    "face_landmarks.onnx": {
+      "sha256": "a447777ab64d83e7a641850b3473f7344cb82b2cb62be223dd5897f2b8303086",
+      "bytes": 4921000
+    }
+  }
+}

@@ -1,0 +1,30 @@
+param([string]$PayloadDirectory)
+$ErrorActionPreference = 'Stop'
+$taskRoot = Split-Path -Parent $PSScriptRoot
+if (-not $PayloadDirectory) { $PayloadDirectory = Join-Path $taskRoot 'dist/obs-trueitem-beauty' }
+$PayloadDirectory = (Resolve-Path -LiteralPath $PayloadDirectory).Path
+$workDir = Join-Path $PSScriptRoot 'work'
+$outDir = Join-Path $PSScriptRoot 'out'
+New-Item -ItemType Directory -Path $workDir, $outDir -Force | Out-Null
+foreach ($file in @('bin/64bit/obs-trueitem-beauty.dll', 'bin/64bit/onnxruntime.dll', 'bin/64bit/onnxruntime_providers_shared.dll', 'data/beauty.effect', 'data/models/face_detector.onnx', 'data/models/face_landmarks.onnx', 'data/user-preset.json', 'data/licenses/TRUEITEM-LICENSE.txt', 'data/licenses/THIRD-PARTY-NOTICES.md')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $PayloadDirectory $file) -PathType Leaf)) { throw "Missing payload file: $file" }
+}
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$zip = Join-Path $workDir ("payload-" + [guid]::NewGuid().ToString('N') + '.zip')
+[IO.Compression.ZipFile]::CreateFromDirectory($PayloadDirectory, $zip, [IO.Compression.CompressionLevel]::Optimal, $false)
+$sha = Join-Path $workDir 'payload.sha256'
+[IO.File]::WriteAllText($sha, (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant(), [Text.Encoding]::ASCII)
+$compiler = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319/csc.exe'
+if (-not (Test-Path -LiteralPath $compiler)) { throw '.NET Framework C# compiler is unavailable.' }
+$output = Join-Path $outDir 'VEIL-OBS-Filter-Setup.exe'
+& $compiler /nologo /noconfig /target:winexe /platform:x64 /optimize+ "/out:$output" "/resource:$zip,Trueitem.Payload.zip" "/resource:$sha,Trueitem.Payload.sha256" /reference:System.dll /reference:System.Core.dll /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll (Join-Path $PSScriptRoot 'Installer.cs')
+if ($LASTEXITCODE -ne 0) { throw "Installer compilation failed ($LASTEXITCODE)" }
+$record = [ordered]@{
+    installer = $output
+    installerSHA256 = (Get-FileHash -LiteralPath $output -Algorithm SHA256).Hash.ToLowerInvariant()
+    payload = $PayloadDirectory
+    payloadSHA256 = [IO.File]::ReadAllText($sha)
+    builtUTC = [DateTime]::UtcNow.ToString('o')
+}
+$record | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $outDir 'build-proof.json') -Encoding UTF8
+Write-Host "Single-file installer built: $output"

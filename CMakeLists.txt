@@ -1,0 +1,150 @@
+cmake_minimum_required(VERSION 3.24)
+project(obs_trueitem_beauty VERSION 0.4.5 LANGUAGES C CXX)
+
+if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "This distribution targets OBS 33 Windows x64.")
+endif()
+if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  message(FATAL_ERROR "Use build.ps1 and the packaged LLVM-mingw toolchain.")
+endif()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(OBS_SDK "${CMAKE_CURRENT_SOURCE_DIR}/third_party/obs-sdk")
+set(ORT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/onnxruntime")
+find_package(Threads REQUIRED)
+
+add_library(trueitem_build_options INTERFACE)
+target_compile_definitions(trueitem_build_options INTERFACE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_compile_options(trueitem_build_options INTERFACE -Wall -Wextra -Wno-missing-field-initializers)
+# Keep compiler C++/thread/unwind runtimes inside each binary. OBS and Windows
+# system APIs still use their usual DLL imports. No bundled compiler DLLs needed.
+target_link_options(trueitem_build_options INTERFACE -static)
+
+add_library(OBS::libobs SHARED IMPORTED)
+set_target_properties(OBS::libobs PROPERTIES
+  IMPORTED_IMPLIB "${OBS_SDK}/lib/libobs.dll.a"
+  IMPORTED_LOCATION "C:/Program Files/obs-studio/bin/64bit/obs.dll"
+  INTERFACE_INCLUDE_DIRECTORIES "${OBS_SDK}/obs-studio-33.0.1/libobs;${OBS_SDK}/generated")
+
+add_library(trueitem_core STATIC src/beauty_core.cpp)
+target_include_directories(trueitem_core PUBLIC src)
+target_link_libraries(trueitem_core PUBLIC trueitem_build_options)
+
+add_library(trueitem_tracker STATIC src/face_tracker.cpp)
+target_include_directories(trueitem_tracker PUBLIC src PRIVATE "${ORT_ROOT}/include")
+target_link_libraries(trueitem_tracker PUBLIC trueitem_build_options Threads::Threads)
+
+add_library(obs-trueitem-beauty MODULE src/native-filter.cpp src/background_tools.cpp)
+target_compile_definitions(obs-trueitem-beauty PRIVATE VEIL_VERSION="${PROJECT_VERSION}")
+set_target_properties(obs-trueitem-beauty PROPERTIES PREFIX "" OUTPUT_NAME "obs-trueitem-beauty")
+target_link_libraries(obs-trueitem-beauty PRIVATE trueitem_core trueitem_tracker OBS::libobs)
+
+# Separate module and API table: face CPU ORT1.31 and matting DirectML ORT1.24
+# never share C++ inline runtime globals or a DLL basename.
+add_library(veil-video-matting MODULE src/video_matting_filter.cpp src/matting_model.cpp src/reference_preview.cpp src/background_refinement.cpp)
+set_target_properties(veil-video-matting PROPERTIES PREFIX "" OUTPUT_NAME "veil-video-matting")
+target_include_directories(veil-video-matting PRIVATE third_party/video-matting/include)
+target_link_libraries(veil-video-matting PRIVATE trueitem_build_options Threads::Threads OBS::libobs ole32 windowscodecs uuid)
+
+set(ADV_COMPONENTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/background-engines/advanced-components/src")
+add_library(veil-background-finish MODULE src/background_finish.c
+  "${ADV_COMPONENTS}/mask-feather.c" "${ADV_COMPONENTS}/mask-chroma-key.c" "${ADV_COMPONENTS}/obs-utils.c")
+set_target_properties(veil-background-finish PROPERTIES PREFIX "" OUTPUT_NAME "veil-background-finish")
+target_include_directories(veil-background-finish PRIVATE src "${ADV_COMPONENTS}")
+target_link_libraries(veil-background-finish PRIVATE trueitem_build_options OBS::libobs)
+
+include(CTest)
+if(BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/math_test.cpp")
+  add_executable(veil_background_smoke tests/background_smoke.cpp)
+  target_include_directories(veil_background_smoke PRIVATE src)
+  target_link_libraries(veil_background_smoke PRIVATE trueitem_build_options Threads::Threads OBS::libobs ole32 windowscodecs uuid)
+  add_executable(veil_gpu_smoke tests/gpu_smoke.cpp)
+  target_link_libraries(veil_gpu_smoke PRIVATE trueitem_build_options Threads::Threads OBS::libobs ole32 windowscodecs uuid)
+  add_executable(veil_matting_processing_test tests/matting_processing_test.cpp)
+  target_include_directories(veil_matting_processing_test PRIVATE src)
+  target_link_libraries(veil_matting_processing_test PRIVATE trueitem_build_options)
+  add_test(NAME matting_processing_equivalence COMMAND veil_matting_processing_test)
+  add_executable(veil_matting_quality_probe tests/matting_quality_probe.cpp src/matting_model.cpp src/background_refinement.cpp)
+  target_include_directories(veil_matting_quality_probe PRIVATE src third_party/video-matting/include)
+  target_link_libraries(veil_matting_quality_probe PRIVATE trueitem_build_options Threads::Threads)
+  add_executable(veil_background_refinement_test tests/background_refinement_test.cpp src/background_refinement.cpp)
+  target_include_directories(veil_background_refinement_test PRIVATE src)
+  target_link_libraries(veil_background_refinement_test PRIVATE trueitem_build_options)
+  add_test(NAME registered_background_preserves_body COMMAND veil_background_refinement_test)
+  add_executable(veil_reference_storage_test tests/reference_storage_test.cpp src/matting_model.cpp src/reference_preview.cpp src/background_refinement.cpp)
+  target_include_directories(veil_reference_storage_test PRIVATE third_party/video-matting/include)
+  target_link_libraries(veil_reference_storage_test PRIVATE trueitem_build_options Threads::Threads OBS::libobs ole32 windowscodecs uuid)
+  add_test(NAME reference_shutdown_write COMMAND veil_reference_storage_test write "${CMAKE_BINARY_DIR}/reference-storage-test")
+  add_test(NAME reference_process_reload COMMAND veil_reference_storage_test read "${CMAKE_BINARY_DIR}/reference-storage-test")
+  add_test(NAME reference_shutdown_erase COMMAND veil_reference_storage_test erase "${CMAKE_BINARY_DIR}/reference-storage-test")
+  set_tests_properties(reference_process_reload PROPERTIES DEPENDS reference_shutdown_write)
+  set_tests_properties(reference_shutdown_erase PROPERTIES DEPENDS reference_process_reload)
+  set_tests_properties(reference_shutdown_write reference_process_reload reference_shutdown_erase
+    PROPERTIES ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:$<TARGET_FILE_DIR:OBS::libobs>")
+  add_executable(veil_matting_pixels_test tests/matting_pixels_test.cpp)
+  target_include_directories(veil_matting_pixels_test PRIVATE src)
+  target_link_libraries(veil_matting_pixels_test PRIVATE trueitem_build_options)
+  add_test(NAME matting_pixel_equivalence COMMAND veil_matting_pixels_test)
+  add_executable(trueitem_math_test tests/math_test.cpp)
+  target_compile_options(trueitem_math_test PRIVATE -UNDEBUG)
+  target_link_libraries(trueitem_math_test PRIVATE trueitem_core)
+  add_executable(veil_natural_motion_test tests/natural_motion_test.cpp)
+  target_compile_options(veil_natural_motion_test PRIVATE -UNDEBUG)
+  target_link_libraries(veil_natural_motion_test PRIVATE trueitem_core)
+  add_test(NAME natural_shape_and_motion COMMAND veil_natural_motion_test "${CMAKE_CURRENT_SOURCE_DIR}/tests/math_reference.txt")
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/math_reference.txt")
+    add_test(NAME math_equivalence COMMAND trueitem_math_test "${CMAKE_CURRENT_SOURCE_DIR}/tests/math_reference.txt")
+  endif()
+endif()
+if(BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/face-tracking/tracker_test.cpp")
+  add_executable(trueitem_tracker_test third_party/face-tracking/tracker_test.cpp)
+  target_compile_options(trueitem_tracker_test PRIVATE -UNDEBUG)
+  target_link_libraries(trueitem_tracker_test PRIVATE trueitem_tracker)
+  add_test(NAME face_tracker_fixture COMMAND trueitem_tracker_test
+    "${CMAKE_CURRENT_SOURCE_DIR}/models"
+    "${ORT_ROOT}/lib/onnxruntime.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/face-tracking/fixtures/astronaut-320.bgra")
+endif()
+
+# OBS 33's Windows legacy loader explicitly supports this layout in ProgramData.
+install(TARGETS obs-trueitem-beauty RUNTIME DESTINATION bin/64bit LIBRARY DESTINATION bin/64bit)
+install(FILES "${ORT_ROOT}/lib/onnxruntime.dll" "${ORT_ROOT}/lib/onnxruntime_providers_shared.dll" DESTINATION bin/64bit)
+install(FILES effects/beauty.effect DESTINATION data)
+install(DIRECTORY third_party/background-engines/lite/ DESTINATION data/engines/lite)
+install(DIRECTORY third_party/background-engines/advanced/ DESTINATION data/engines/advanced)
+install(FILES third_party/background-engines/PROVENANCE.json DESTINATION data/engines)
+install(FILES third_party/background-engines/lite-premultiplied-alpha.patch DESTINATION data/engines)
+install(FILES third_party/background-engines/PyMatting-MIT.txt DESTINATION data/licenses)
+install(TARGETS veil-video-matting RUNTIME DESTINATION data/engines/video/bin/64bit LIBRARY DESTINATION data/engines/video/bin/64bit)
+install(TARGETS veil-background-finish RUNTIME DESTINATION data/engines/finish LIBRARY DESTINATION data/engines/finish)
+install(DIRECTORY third_party/video-matting/bin/ DESTINATION data/engines/video/bin)
+install(DIRECTORY third_party/video-matting/data/ DESTINATION data/engines/video/data)
+install(DIRECTORY models/ DESTINATION data/models)
+set(VEIL_PRESET "${CMAKE_CURRENT_SOURCE_DIR}/presets/neutral.json")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/presets/trueitem-user-2026-11-03.json")
+  set(VEIL_PRESET "${CMAKE_CURRENT_SOURCE_DIR}/presets/trueitem-user-2026-11-03.json")
+endif()
+install(FILES "${VEIL_PRESET}" DESTINATION data RENAME user-preset.json)
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+  install(FILES LICENSE DESTINATION data/licenses RENAME TRUEITEM-LICENSE.txt)
+endif()
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/THIRD-PARTY-NOTICES.md")
+  install(FILES THIRD-PARTY-NOTICES.md DESTINATION data/licenses)
+endif()
+install(FILES "${OBS_SDK}/obs-studio-33.0.1/COPYING" DESTINATION data/licenses RENAME OBS-COPYING.txt)
+install(FILES "${ORT_ROOT}/LICENSE" DESTINATION data/licenses RENAME ONNX-Runtime-LICENSE.txt)
+install(FILES "${ORT_ROOT}/ThirdPartyNotices.txt" DESTINATION data/licenses RENAME ONNX-Runtime-ThirdPartyNotices.txt)
+install(FILES "${TRUEITEM_LLVM_ROOT}/LICENSE.TXT" DESTINATION data/licenses RENAME LLVM-Mingw-Runtime-LICENSE.txt)
+install(FILES
+  "${TRUEITEM_LLVM_ROOT}/x86_64-w64-mingw32/share/mingw32/COPYING.MinGW-w64-runtime.txt"
+  "${TRUEITEM_LLVM_ROOT}/x86_64-w64-mingw32/share/mingw32/COPYING.MinGW-w64.txt"
+  "${TRUEITEM_LLVM_ROOT}/x86_64-w64-mingw32/share/mingw32/COPYING.winpthreads.txt"
+  DESTINATION data/licenses)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/face-beautifier/LICENSE")
+  install(FILES third_party/face-beautifier/LICENSE DESTINATION data/licenses RENAME Face-Beautifier-LICENSE.txt)
+endif()
+install(FILES third_party/face-tracking/LICENSE-LUMINA.txt DESTINATION data/licenses)
+install(FILES third_party/face-tracking/NOTICE.md DESTINATION data/licenses RENAME Face-Tracking-NOTICE.md)

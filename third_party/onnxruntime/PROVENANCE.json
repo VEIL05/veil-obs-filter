@@ -1,0 +1,6 @@
+{
+  "version": "1.31.1",
+  "url": "https://github.com/microsoft/onnxruntime/releases/download/v1.31.1/onnxruntime-win-x64-1.31.1.zip",
+  "sha256": "5869e26bb25314375f2d5ef1877e3ea06b1543d6c710e6e4a1ec2f7177ab4b2c",
+  "verification": "GitHub release API asset digest matched downloaded archive"
+}
