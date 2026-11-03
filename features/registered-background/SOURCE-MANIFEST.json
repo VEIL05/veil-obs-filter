@@ -1,0 +1,13 @@
+{
+  "src/registered_background_feature.h": "7cdec7b29af9082117bac93286b5e5b6bbe5ff1b2240896f167c941bab03be95",
+  "src/video_matting_filter.cpp": "b809b50bb713c8104ca338403c691e025d57a82a3a8f2460f7767133bed35e32",
+  "src/background_refinement.cpp": "4e620474b21a2220cc9b13071b9588f7eb8db2b874a992aaa4148acb70a811cd",
+  "src/background_refinement.h": "125e49b39fc1a41819b080f5d3118bd41187427ad9c106d1beb1fc8dd123be6d",
+  "src/reference_preview.cpp": "aff61d306a6ef6f47d85c79947c8265fb35a598ec96a3955922357a680c38ec9",
+  "src/reference_preview.h": "db5e3a103b9739b26e33fe88267fd20f2426d63bc3515e70db799ef576fca2c3",
+  "src/matting_model.cpp": "c04a2e29d378c5b14fb4a54810998f867b9891371c15932653f9d7ac95464038",
+  "src/matting_model.h": "83fbea7a275a447b230000d8b71c68df565ea57d6a24bbe7f6be7260a5ed8616",
+  "tests/reference_storage_test.cpp": "fb0a12ef94415997f4924f357a4f81bbfddc946f7d9565138adc52469ed657f4",
+  "tests/background_refinement_test.cpp": "f9da94ae25b3501c01c4fb466c6f68c8b30fe07d1bd1d8d390b2b427b234f55d",
+  "tests/background_smoke.cpp": "e2d2d7ddb21e9203798566ce57144da1a2e6c52a248db0af9c2fbdcd9aac6dae"
+}

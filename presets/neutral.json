@@ -1,0 +1,33 @@
+{
+  "schema": "trueitem.face-beautifier.preset",
+  "version": 1,
+  "name": "기본 설정",
+  "values": {
+    "smooth": 0,
+    "texture": 100,
+    "even": 0,
+    "radius": 50,
+    "sharpen": 0,
+    "slim": 0,
+    "chin": 0,
+    "eyes": 0,
+    "nose": 0,
+    "lips": 0,
+    "eyeBright": 0,
+    "underEye": 0,
+    "lipAmount": 0,
+    "blushAmount": 0,
+    "bright": 0,
+    "warmth": 0,
+    "vibrance": 0,
+    "contrast": 0,
+    "glow": 0,
+    "vignette": 0,
+    "grain": 0
+  },
+  "colors": {
+    "lip": "#c4485f",
+    "blush": "#ff8a6b"
+  },
+  "mirror": false
+}

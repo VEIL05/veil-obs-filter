@@ -1,0 +1,24 @@
+{
+  "upstream": "https://github.com/FiniteSingularity/obs-advanced-masks/tree/v1.6.1",
+  "archive_sha256": "4790c950f7f9aa441c1691da46755300dcf3839ed8c205a0df1ac34bcfe8c7e9",
+  "unmodified_files": {
+    "advanced-masks-filter.h": "f1180ea6df4661cfb779df1f455b30c69d44c2b56d5383486cf99c71955284e2",
+    "advanced-masks.h": "238682d506328ebbdeac49845c3bc4a14f3d071715c1b41a6766c15151e72c71",
+    "base-filter.h": "161861c5b91f538c422eae835d56a765879555e5acfc00315586ff7c2500d32b",
+    "color-adjustments.h": "87e54145c40c9dbc72d21de9c4be10a917f6457a20a43337bd5d42f447c5889d",
+    "mask-bsm.h": "016101efb049adf1e9b06e269005ea2c27a3ed985b76c4b34295d49c736b8d71",
+    "mask-chroma-key.c": "a76954cfcd821979ca2fc70628a0719b4e64a43fd8a130c3eb73352153fb461f",
+    "mask-chroma-key.h": "0130f55863fb5d6b6ee9de77b65c33cb99119a1167e770be58161ed5972abaaf",
+    "mask-feather.c": "987fe96d1ffdc957792995c3eab3c4fd84b1333f8273cedb3b6fffad2cf6162a",
+    "mask-feather.h": "c67b03b9f8fcc60a3163fa276a2f4ac157835baf48832ec475b4cfea6b7961be",
+    "mask-gradient.h": "8511ff0f61d932b2b3e5501290b4da907b5e914e0e066cc1f093d6e31de03b12",
+    "mask-shape.h": "96eded98235a6202cd9284b7f84bbecc703df33e860b801044cf4a2d7af3a1a1",
+    "mask-source.h": "26662f895c05ed42b8fbf026b12901e47bfff31d612d655ccfd8dc81a0d221a6",
+    "mask-svg.h": "def35efa1e8edae28ef17deba51c3ecf4a2d9daa57c2099a93bcbccbfb5af1e9",
+    "obs-utils.c": "c3d68a00f9682a8bb1f35656196ec82aef75668f9083d8ab546c21a21725f257",
+    "obs-utils.h": "f2683798d95fac8f2b8c8e976e1a0efaeddf75dd1b26c996591e1a5e93c483bf",
+    "utils.h": "e4cdbe85db5831edc2adf5ee068c041c7036f1d13f531f8227255d21125823c0",
+    "version.h": "72369b931d4382f92f3b6f5c2ae4433c7ebd1453fbccd4edf7e5ff6595f2a224"
+  },
+  "integration": "Three unmodified C units plus VEIL wrapper. Uses unchanged bundled AdvancedMasks shaders. Full original DLL retained for unrelated filters."
+}

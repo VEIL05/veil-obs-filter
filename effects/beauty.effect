@@ -1,0 +1,338 @@
+// Port of ctbot000/face-beautifier ca5ad40b58e2d0133de6b22282b29000d3667046.
+// Copyright (c) 2026 CTBot000, MIT. See third_party/face-beautifier/LICENSE.
+// All textures/render targets are gamma-encoded UNORM. No linearisation here.
+uniform float4x4 ViewProj;
+uniform texture2d uTex;
+uniform texture2d uSrc;
+uniform texture2d uFine;
+uniform texture2d uWide;
+uniform texture2d uMask;
+uniform float2 uStep;
+uniform float uAspect;
+uniform float uFace;
+uniform float uTime;
+uniform float uMirror;
+uniform float uNatural;
+uniform int uWarpCount;
+uniform float4 uWarpP[24];
+uniform float4 uWarpQ[24];
+uniform float uSmooth;
+uniform float uTexture;
+uniform float uEven;
+uniform float uSharpen;
+uniform float uBright;
+uniform float uWarmth;
+uniform float uVibrance;
+uniform float uContrast;
+uniform float uGlow;
+uniform float uVignette;
+uniform float uGrain;
+uniform float uEyeBright;
+uniform float uUnderEye;
+uniform float3 uLipColor;
+uniform float uLipAmount;
+uniform float3 uBlushColor;
+uniform float uBlushAmount;
+uniform float4 uEyeL;
+uniform float4 uEyeR;
+uniform float4 uCheekL;
+uniform float4 uCheekR;
+uniform float uCompare = -1.0;
+uniform float uStrength;
+uniform float uSkinBright;
+uniform float uRedness;
+uniform float uTeethWhite;
+uniform float uLipGloss;
+uniform float4 uMouth;
+uniform int uLook;
+uniform float uLookAmount;
+// OBS's effect parser re-emits global const declarations without initializers.
+// Expand numeric constants before that conversion to preserve shader layout.
+#define MAX_WARP 24
+sampler_state textureSampler { Filter = Linear; AddressU = Clamp; AddressV = Clamp; };
+struct VertData { float4 pos : POSITION; float2 uv : TEXCOORD0; };
+VertData VSDefault(VertData v) { VertData o; o.pos = mul(float4(v.pos.xyz,1.0), ViewProj); o.uv=v.uv; return o; }
+float4 PSBlur(VertData v) : TARGET {
+  float4 c=uTex.Sample(textureSampler,v.uv)*0.2270270270;
+  c+=(uTex.Sample(textureSampler,v.uv+uStep*1.3846153846)+uTex.Sample(textureSampler,v.uv-uStep*1.3846153846))*0.3162162162;
+  c+=(uTex.Sample(textureSampler,v.uv+uStep*3.2307692308)+uTex.Sample(textureSampler,v.uv-uStep*3.2307692308))*0.0702702703;
+  return c;
+}
+
+#define LUMA float3(0.2126, 0.7152, 0.0722)
+
+float luma(float3 c) { return dot(c, LUMA); }
+
+float2 toAspect(float2 uv) { return float2(uv.x * uAspect, uv.y); }
+float2 fromAspect(float2 p) { return float2(p.x / uAspect, p.y); }
+
+float3 rgb2ycc(float3 c) {
+  float y = dot(c, float3(0.299, 0.587, 0.114));
+  return float3(y, (c.b - y) * 0.564 + 0.5, (c.r - y) * 0.713 + 0.5);
+}
+
+float3 ycc2rgb(float3 v) {
+  float cb = v.y - 0.5;
+  float cr = v.z - 0.5;
+  return float3(v.x + 1.403 * cr, v.x - 0.344 * cb - 0.714 * cr, v.x + 1.773 * cb);
+}
+
+/** Soft-light blend, the W3C/Photoshop form. Keeps the subject's own shading. */
+float3 softLight(float3 b, float3 s) {
+  float3 lo = 2.0 * b * s + b * b * (1.0 - 2.0 * s);
+  float3 hi = sqrt(max(b, 0.0)) * (2.0 * s - 1.0) + 2.0 * b * (1.0 - s);
+  return lerp(lo, hi, step(float3(0.5,0.5,0.5), s));
+}
+
+/** Loose YCbCr skin-chroma test. Carries the whole mask when no face is found. */
+float skinTone(float3 c) {
+  float3 v = rgb2ycc(c);
+  float w = smoothstep(0.30, 0.36, v.y) * (1.0 - smoothstep(0.48, 0.54, v.y));
+  w *= smoothstep(0.51, 0.545, v.z) * (1.0 - smoothstep(0.65, 0.70, v.z));
+  w *= smoothstep(0.05, 0.16, v.x) * (1.0 - smoothstep(0.93, 1.0, v.x));
+  return w;
+}
+
+float blob(float2 p, float2 c, float2 r) {
+  float2 d = (p - c) / max(r, float2(1e-4,1e-4));
+  return 1.0 - smoothstep(0.45, 1.0, length(d));
+}
+
+float hash21(float2 p) {
+  p = frac(p * float2(443.8975, 397.2973));
+  p += dot(p, p + 19.19);
+  return frac(p.x * p.y);
+}
+
+/**
+ * Falloff for every warp handle: 1 at the centre, 0 on the circle of radius r,
+ * and — the part that matters — zero slope at both ends.
+ *
+ * The textbook local warp (Gustafsson) uses (r^2-d^2)/(r^2-d^2+|m|^2) squared
+ * instead, which is steep at the rim: measured against the axial backward map,
+ * it is non-monotonic for every displacement below about 0.55r, folding by as
+ * much as 0.05r and leaving a faint ring inside each handle. A falloff that is
+ * flat at the rim cannot do that, and stays injective out to |m| = 2r/3.
+ */
+float warpFalloff(float t) {
+  return 1.0 - t * t * (3.0 - 2.0 * t);
+}
+
+/**
+ * Backward map for the displayed pixel.
+ *
+ * mode 0 — translation: the pixel at the handle centre takes exactly what was
+ * at centre - d, so a handle placed at a feature's destination moves it there.
+ * mode 1 — radial scale about the centre; k > 0 magnifies.
+ *
+ * Handles compose by running the coordinate through each in turn.
+ */
+float2 applyWarp(float2 uv) {
+  float2 p = toAspect(uv);
+  if (uNatural > 0.5) {
+    float2 shift = float2(0.0,0.0);
+    float weight = 0.0;
+    for (int i = 0; i < MAX_WARP; i++) {
+      if (i >= uWarpCount) break;
+      float4 hp=uWarpP[i]; float4 hq=uWarpQ[i];
+      float2 d=p-hp.xy;float t=length(d)/hp.z;
+      if (t>=1.0) continue;
+      float fall=warpFalloff(t);
+      shift+=(hp.w<0.5 ? hq.xy : d*hq.z)*fall;
+      weight+=fall;
+    }
+    return fromAspect(p-shift/(1.0+weight));
+  }
+  for (int i = 0; i < MAX_WARP; i++) {
+    if (i >= uWarpCount) break;
+    float4 hp = uWarpP[i];
+    float4 hq = uWarpQ[i];
+    float2 d = p - hp.xy;
+    float dd = dot(d, d);
+    float rr = hp.z * hp.z;
+    if (dd >= rr) continue;
+    float fall = warpFalloff(sqrt(dd) / hp.z);
+    if (hp.w < 0.5) p -= hq.xy * fall;
+    else p = hp.xy + d * (1.0 - hq.z * fall);
+  }
+  return fromAspect(p);
+}
+
+float4 PSComposite(VertData v) : TARGET {
+  float2 vScreen = v.uv;
+  float2 vUv = float2(lerp(v.uv.x, 1.0-v.uv.x, uMirror), v.uv.y);
+  // OBS supplies premultiplied alpha. Run the original colour mathematics on
+  // straight RGB; multiply by the warped source coverage again on output.
+  float4 originalSample = uSrc.Sample(textureSampler, vUv);
+  float3 original = originalSample.rgb / max(originalSample.a, 0.0001);
+
+  float2 uv = clamp(applyWarp(vUv), 0.0, 1.0);
+  float2 p = toAspect(uv);
+
+  float4 sourceSample = uSrc.Sample(textureSampler, uv);
+  float4 fineSample = uFine.Sample(textureSampler, uv);
+  float4 wideSample = uWide.Sample(textureSampler, uv);
+  float3 src  = sourceSample.rgb / max(sourceSample.a, 0.0001);
+  float3 fine = fineSample.rgb / max(fineSample.a, 0.0001);
+  float3 wide = wideSample.rgb / max(wideSample.a, 0.0001);
+  float3 mk   = uMask.Sample(textureSampler, uv).rgb;
+
+  float tone = skinTone(src);
+  // With landmarks the face polygon decides; the chroma test only vetoes
+  // things inside it that are plainly not skin (frames, beards, shadow).
+  float skin = lerp(tone * 0.9, mk.r * lerp(0.45, 1.0, tone), uFace);
+
+  // ---- texture smoothing: keep the big edges, flatten the small stuff ----
+  float3 detail = src - fine;
+  float edge = smoothstep(0.030, 0.115, abs(dot(detail, LUMA)));
+  float amount = uSmooth * skin;
+  float keep = lerp(lerp(1.0 - amount, 1.0, uTexture * 0.85), 1.0, edge);
+  float3 col = fine + detail * keep;
+
+  // Skin-only correction leaves the lips, eyes, hair and background alone.
+  if (uSkinBright > 0.001) {
+    col += (1.0-col) * uSkinBright * skin * uFace * 0.22;
+  }
+  if (uRedness > 0.001) {
+    float excess=max(0.0,col.r-(col.g+col.b)*0.5-0.035);
+    float correction=excess*uRedness*skin*uFace*0.65;
+    col += float3(-correction,correction*0.22,correction*0.14);
+  }
+
+  // ---- even tone: lift dark spots, borrow the surrounding chroma ----------
+  if (uEven > 0.001) {
+    float3 cv = rgb2ycc(col);
+    float3 wv = rgb2ycc(wide);
+    float spot = smoothstep(0.0, 1.0, (wv.x - cv.x) / 0.055);
+    float lifted = lerp(cv.x, wv.x, spot * 0.85);
+    float k = uEven * skin;
+    float3 out_ycc = float3(
+      lerp(cv.x, lifted, k),
+      lerp(cv.y, wv.y, k * 0.7),
+      lerp(cv.z, wv.z, k * 0.7));
+    col = ycc2rgb(out_ycc);
+  }
+
+  // ---- sharpen what we did not smooth ------------------------------------
+  if (uSharpen > 0.001) {
+    col += (src - wide) * uSharpen * (1.0 - amount * 0.85);
+  }
+
+  // ---- under-eye lift -----------------------------------------------------
+  if (uUnderEye > 0.001 && uFace > 0.01) {
+    float ue =
+      blob(p, uEyeL.xy + float2(0.0, uEyeL.z * 0.95), float2(uEyeL.z * 1.15, uEyeL.z * 0.85)) * uEyeL.w +
+      blob(p, uEyeR.xy + float2(0.0, uEyeR.z * 0.95), float2(uEyeR.z * 1.15, uEyeR.z * 0.85)) * uEyeR.w;
+    ue = clamp(ue, 0.0, 1.0) * uUnderEye * uFace;
+    float3 cv = rgb2ycc(col);
+    float3 lift = ycc2rgb(float3(cv.x + (1.0 - cv.x) * 0.22, lerp(cv.y, 0.5, 0.25), lerp(cv.z, 0.5, 0.3)));
+    col = lerp(col, lift, ue * (1.0 - smoothstep(0.55, 0.85, cv.x)));
+  }
+
+  // ---- eyes and teeth ------------------------------------------------------
+  float eyeM = mk.b * uEyeBright * uFace;
+  if (eyeM > 0.001) {
+    float3 cv = rgb2ycc(col);
+    float whites = smoothstep(0.26, 0.62, cv.x);
+    float iris = 1.0 - smoothstep(0.14, 0.42, cv.x);
+    float3 whiter = ycc2rgb(float3(
+      min(1.0, cv.x + 0.20 * eyeM),
+      lerp(cv.y, 0.5, 0.8),
+      lerp(cv.z, 0.5, 0.8)));
+    col = lerp(col, whiter, eyeM * whites);
+    float3 deeper = ycc2rgb(float3(clamp((cv.x - 0.42) * 1.35 + 0.42, 0.0, 1.0), cv.y, cv.z));
+    col = lerp(col, deeper, eyeM * iris * 0.7);
+  }
+
+  // ---- lips ----------------------------------------------------------------
+  float lipM = mk.g * uLipAmount * uFace;
+  if (lipM > 0.001) {
+    float3 cv = rgb2ycc(col);
+    float3 tv = rgb2ycc(uLipColor);
+    float3 tinted = ycc2rgb(float3(
+      cv.x * lerp(1.0, 0.93, lipM),
+      lerp(cv.y, tv.y, 0.92),
+      lerp(cv.z, tv.z, 0.92)));
+    col = lerp(col, tinted, lipM);
+    float gloss = smoothstep(0.62, 0.95, luma(src));
+    col += float3(gloss * lipM * 0.22,gloss * lipM * 0.22,gloss * lipM * 0.22);
+  }
+  if (uTeethWhite > 0.001 && uFace > 0.01) {
+    float mouth=blob(p,uMouth.xy,float2(uMouth.z,uMouth.z*0.42));
+    float chroma=max(col.r,max(col.g,col.b))-min(col.r,min(col.g,col.b));
+    float teeth=mouth*mk.b*(1.0-smoothstep(0.12,0.35,chroma))*smoothstep(0.25,0.65,luma(col));
+    float y=luma(col);
+    col=lerp(col,float3(y,y,y)+(1.0-y)*0.18,teeth*uTeethWhite*uFace*0.8);
+  }
+  if (uLipGloss > 0.001) {
+    float highlight=smoothstep(0.25,0.85,luma(src));
+    col+=(1.0-col)*highlight*mk.g*uFace*uLipGloss*0.20;
+  }
+
+  // ---- blush ---------------------------------------------------------------
+  if (uBlushAmount > 0.001 && uFace > 0.01) {
+    float b =
+      blob(p, uCheekL.xy, float2(uCheekL.z, uCheekL.z * 0.78)) * uCheekL.w +
+      blob(p, uCheekR.xy, float2(uCheekR.z, uCheekR.z * 0.78)) * uCheekR.w;
+    b = clamp(b, 0.0, 1.0) * uBlushAmount * uFace * max(skin, 0.35);
+    col = lerp(col, softLight(clamp(col, 0.0, 1.0), uBlushColor), b);
+  }
+
+  // ---- global light and colour --------------------------------------------
+  if (uGlow > 0.001) {
+    float3 screenBlend = 1.0 - (1.0 - col) * (1.0 - wide * 0.75);
+    col = lerp(col, screenBlend, uGlow * 0.55);
+  }
+
+  col = uBright >= 0.0 ? col + uBright * (1.0 - col) * 0.9 : col * (1.0 + uBright);
+  col *= float3(1.0 + uWarmth * 0.085, 1.0 + uWarmth * 0.012, 1.0 - uWarmth * 0.085);
+
+  if (abs(uVibrance) > 0.001) {
+    float mx = max(col.r, max(col.g, col.b));
+    float mn = min(col.r, min(col.g, col.b));
+    col = lerp(float3(luma(col),luma(col),luma(col)), col, 1.0 + uVibrance * (1.0 - (mx - mn)));
+  }
+  if (abs(uContrast) > 0.001) {
+    col = (col - 0.5) * (1.0 + uContrast) + 0.5;
+  }
+
+  if (uVignette > 0.001) {
+    float r = length(vScreen - 0.5) * 1.4142;
+    col *= 1.0 - uVignette * smoothstep(0.45, 1.05, r);
+  }
+  if (uGrain > 0.001) {
+    col += (hash21(vScreen * 1024.0 + frac(uTime) * 91.7) - 0.5) * uGrain * 0.11;
+  }
+
+  float3 look=col;
+  if (uLook==1) look=col*float3(1.035,0.99,0.97)+float3(0.015,0.002,0.006);
+  if (uLook==2) look=col*float3(1.025,1.0,0.94)+float3(0.015,0.009,0.0);
+  if (uLook==3) look=col*float3(0.97,1.005,1.035)+float3(0.0,0.004,0.009);
+  if (uLook==4) look=(col-0.5)*1.06+0.5+float3(0.008,0.0,-0.01);
+  if (uLook==5) look=float3(luma(col),luma(col),luma(col));
+  col=lerp(col,look,uLookAmount);
+
+  col = clamp(col, 0.0, 1.0);
+
+  // Blend colour at the same warped coordinate. Geometry strength is applied
+  // to the CPU warp handles, avoiding double edges at partial strength.
+  float4 processed=float4(lerp(src,col,uStrength)*sourceSample.a,sourceSample.a);
+  if (uCompare >= 0.0) {
+    float t = smoothstep(uCompare - 0.0009, uCompare + 0.0009, vScreen.x);
+    processed=lerp(originalSample,processed,t);
+  }
+  return processed;
+}
+
+
+float4 PSMask(VertData v) : TARGET {
+  float2 uv=float2(lerp(v.uv.x,1.0-v.uv.x,uMirror),v.uv.y);
+  float3 src=uSrc.Sample(textureSampler,uv).rgb;
+  float3 mk=uMask.Sample(textureSampler,uv).rgb;
+  return float4(lerp(src*0.45,src*0.45+mk*0.85,min(1.0,mk.r+mk.g+mk.b)),1.0);
+}
+technique Blur { pass { vertex_shader=VSDefault(v); pixel_shader=PSBlur(v); } }
+technique BlurHorizontal { pass { vertex_shader=VSDefault(v); pixel_shader=PSBlur(v); } }
+technique BlurVertical { pass { vertex_shader=VSDefault(v); pixel_shader=PSBlur(v); } }
+technique Composite { pass { vertex_shader=VSDefault(v); pixel_shader=PSComposite(v); } }
+technique Mask { pass { vertex_shader=VSDefault(v); pixel_shader=PSMask(v); } }
