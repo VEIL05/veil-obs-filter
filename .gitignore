@@ -10,6 +10,11 @@ __pycache__/
 *.pyc
 *.pdb
 *.zip
+# Pinned upstream source archives are part of the public source references.
+!/third_party/background-engines/lite-source.zip
+!/third_party/background-engines/advanced-source.zip
+!/third_party/video-matting/rvm-source.zip
+!/third_party/video-matting/bmv2-source.zip
 *.veilbg
 .env
 .env.*

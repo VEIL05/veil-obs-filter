@@ -115,3 +115,9 @@ Duplicate upstream source ZIPs are not tracked in Git. Preserve the correspondin
 upstream sources and patches when preparing a binary distribution; do not treat
 vendored DLLs and model files alone as a complete source distribution. The fuller
 source delivery and component notices remain the distribution references.
+
+## Source archives and attribution
+
+The four pinned upstream source ZIPs are tracked with their notices. Consult
+[DEPENDENCY-SOURCES.md](DEPENDENCY-SOURCES.md) for their hashes, changes and
+additional rebuild inputs, and [LICENSING.md](LICENSING.md) for module/asset scope.

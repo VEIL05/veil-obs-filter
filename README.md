@@ -49,3 +49,16 @@ component notices. The video adapter and RVM include GPL-3.0 code, the beauty
 code is GPL-2.0-or-later, and other components retain their own terms. DirectML
 has separate Microsoft redistribution terms. The provenance records link the
 pinned upstream assets; duplicate upstream ZIP archives are not tracked here.
+
+## Acknowledgements and source licenses
+
+[Face Beautifier](https://github.com/ctbot000/face-beautifier),
+[Lumina Beauty](https://github.com/dinjufen/lumina-beauty),
+[RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting),
+[BackgroundMattingV2](https://github.com/PeterL1n/BackgroundMattingV2),
+[Advanced Masks](https://github.com/FiniteSingularity/obs-advanced-masks) and
+[Lite](https://github.com/kaito-tokyo/live-backgroundremoval-lite) are acknowledged
+with their exact versions and reuse scope in [CREDITS.md](CREDITS.md).
+See [LICENSE](LICENSE), [module/asset scope](docs/LICENSING.md), and
+[pinned source archives and patches](docs/DEPENDENCY-SOURCES.md).
+Microsoft DirectML retains its separate Microsoft terms and is not open source.
