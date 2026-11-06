@@ -155,6 +155,7 @@ After committing and pushing the owned issue branch and opening its PR, provide
 
 ```powershell
 $env:VEIL_OBS_ROOT = '<verified OBS 33.0.1 root>'
+$env:VEIL_VALIDATION_TEMP_ROOT = '<existing issued short product-test temp directory>'
 pwsh.exe -NoProfile -File ./scripts/Test-PrValidationGate.ps1 -Root $PWD -MaxTotalSeconds 600 -ChildTimeoutSeconds 120
 ```
 
@@ -171,6 +172,9 @@ checks the pinned archive SHA, exact SDK file names and every file's bytes,
 without downloading or extracting anything. The gate compares a name/SHA
 fingerprint before and after the build and reports the untracked file count,
 without claiming a completely clean checkout or deleting dependency sources.
-Run outputs stay under ignored `work/pr-validation` and existing build outputs.
+Run outputs use a new child of `VEIL_VALIDATION_TEMP_ROOT`, or ignored
+`work/pr-validation` when unset, and existing build outputs. Use the issued short
+temp path for a deeply nested checkout: the .NET Framework installer's isolated
+self-test creates its own nested staging/backup directories and obeys MAX_PATH.
 No interactive installer, OBS application or user profile is opened. A passing
 gate does not publish a release or update an installed plugin.

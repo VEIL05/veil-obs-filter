@@ -106,9 +106,14 @@ try {
     $null = Invoke-Step 'build and CTest' $pwsh @('-NoProfile','-File',(Join-Path $Root 'build.ps1'),'-ObsRoot',$env:VEIL_OBS_ROOT)
     $neutral = (Get-FileHash -LiteralPath (Join-Path $Root 'presets/neutral.json') -Algorithm SHA256).Hash
     if ((Get-FileHash -LiteralPath (Join-Path $Root 'dist/obs-trueitem-beauty/data/user-preset.json') -Algorithm SHA256).Hash -ne $neutral) { throw 'Packaged preset differs from the neutral source input.' }
-    $run = Join-Path $Root ('work/pr-validation/' + [guid]::NewGuid().ToString('N'))
+    # The .NET Framework installer's nested self-test must stay below MAX_PATH.
+    # The caller can supply an already issued, short product-test temp directory.
+    $outputRoot = if ($env:VEIL_VALIDATION_TEMP_ROOT) { $env:VEIL_VALIDATION_TEMP_ROOT } else { Join-Path $Root 'work/pr-validation' }
+    if ($env:VEIL_VALIDATION_TEMP_ROOT -and -not (Test-Path -LiteralPath $outputRoot -PathType Container)) { throw 'VEIL_VALIDATION_TEMP_ROOT must be an existing owned test directory.' }
+    $run = Join-Path $outputRoot ('v-' + [guid]::NewGuid().ToString('N').Substring(0,8))
+    if (Test-Path -LiteralPath $run) { throw 'Validation output already exists; use a new owned child.' }
     $null = Invoke-Step 'installer build' $pwsh @('-NoProfile','-File',(Join-Path $Root 'installer/build-installer.ps1'),'-OutputDirectory',(Join-Path $run 'installer'))
-    $null = Invoke-Step 'isolated installer self-test' (Join-Path $run 'installer/VEIL-OBS-Filter-Setup.exe') @('--self-test',(Join-Path $run 'self-test'))
+    $null = Invoke-Step 'isolated installer self-test' (Join-Path $run 'installer/VEIL-OBS-Filter-Setup.exe') @('--self-test',(Join-Path $run 'st'))
     $bootstrapAfter = Assert-SourceClean
     $sdkAfter = (Invoke-Step 'final pinned SDK source bytes' $sdkPython @($sdkVerifier,'--verify-sdk-only') -Quiet) | ConvertFrom-Json
     if ($sdkAfter.source_fingerprint -ne $sdkBefore.source_fingerprint) { throw 'Pinned SDK source snapshot changed during validation.' }
