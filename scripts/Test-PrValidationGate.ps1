@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $timer = [Diagnostics.Stopwatch]::StartNew()
-$expectedRepo = 'VEIL05/veil-obs-filter'
+$expectedRepo = 'ttaem00/CVA-VEIL-OBS-Filter'
 $allowedBootstrap = 'third_party/obs-sdk/obs-studio-33.0.1/'
 $sourceRoot = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot)).TrimEnd('/','\')
 $Root = [IO.Path]::GetFullPath($Root).TrimEnd('/','\')

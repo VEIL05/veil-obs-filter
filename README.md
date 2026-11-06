@@ -9,7 +9,7 @@ VEIL 필터는 그중 얼굴·피부·메이크업과 배경을 조절하는 OBS
 OBS에서 얼굴·피부·메이크업을 다듬고, 배경을 깔끔하게 정리하세요.
 기존 카메라 소스에 필터를 추가해 바로 조절할 수 있습니다.
 
-**[Windows 설치 파일 받기](https://github.com/VEIL05/veil-obs-filter/releases/latest/download/VEIL-OBS-Filter-Setup.exe)** · [최신 버전 안내](https://github.com/VEIL05/veil-obs-filter/releases/latest)
+**[Windows 설치 파일 받기](https://github.com/ttaem00/CVA-VEIL-OBS-Filter/releases/latest/download/VEIL-OBS-Filter-Setup.exe)** · [최신 버전 안내](https://github.com/ttaem00/CVA-VEIL-OBS-Filter/releases/latest)
 
 현재 버전 **0.4.7** · **Windows 64비트용** · OBS Studio **33.0.1**에서 확인했습니다.
 
@@ -61,7 +61,7 @@ VEIL 필터의 **조절할 항목 → 배경 제거 → 배경 필터 추가**�
 - **배경 제거가 멈추거나 인물이 사라져요** — **VEIL 배경 · 인물 → 다시 시작**을 누르세요. 현재 상태는 **상태 새로고침**에서 확인할 수 있습니다.
 - **이전 설치로 돌아가고 싶어요** — OBS를 종료하고 설치 파일의 **설치 되돌리기**를 누르세요. 업데이트 전 설치로 복원하며, 처음 설치한 경우에는 VEIL을 제거합니다.
 
-해결되지 않으면 [문제 제보](https://github.com/VEIL05/veil-obs-filter/issues)에 OBS 버전, 카메라 모델, 문제가 생긴 순서를 알려 주세요.
+해결되지 않으면 [문제 제보](https://github.com/ttaem00/CVA-VEIL-OBS-Filter/issues)에 OBS 버전, 카메라 모델, 문제가 생긴 순서를 알려 주세요.
 더 자세한 조작은 [빠른 사용법](사용법.txt)을 참고하세요.
 
 ## 사용한 프로젝트와 라이선스
