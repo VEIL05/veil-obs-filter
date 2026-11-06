@@ -6,5 +6,3 @@
 *.onnx binary
 *.png binary
 *.bgra binary
-# Preserve the pinned upstream SDK archive's exact bytes on Windows.
-/third_party/obs-sdk/obs-studio-33.0.1/** -text
