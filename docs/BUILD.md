@@ -55,7 +55,7 @@ $obsRoot = '<owned directory>/obs-33.0.1'
 ```
 
 The independent source repository remains
-[VEIL05/veil-obs-filter](https://github.com/VEIL05/veil-obs-filter).
+[ttaem00/CVA-VEIL-OBS-Filter](https://github.com/ttaem00/CVA-VEIL-OBS-Filter).
 Use an owned issue checkout for changes and a fresh destination for each release
 candidate. A local candidate, a published release and an installed plugin are
 separate results; building a candidate does not update either of the latter.
@@ -178,3 +178,16 @@ temp path for a deeply nested checkout: the .NET Framework installer's isolated
 self-test creates its own nested staging/backup directories and obeys MAX_PATH.
 No interactive installer, OBS application or user profile is opened. A passing
 gate does not publish a release or update an installed plugin.
+
+## VEIL development workspace
+
+Canonical local source: `D:/CVA/VEIL/repos/obs-filter`.
+Canonical remote: `ttaem00/CVA-VEIL-OBS-Filter` (public).
+The prepared portable OBS runtime is `D:/CVA/VEIL/dev-deps/obs-33.0.1`.
+Use that path with `-ObsRoot`; create issue-owned worktrees for changes.
+
+Recreate `third_party/toolchain/python-tools` using the pinned requirements in
+each new checkout. Python venv launchers contain absolute paths; copying a venv
+from an old worktree is not a supported setup. Native LLVM and the pinned SDK
+archives can be reused through the bootstrap download cache. Keep source files,
+neutral presets and runtime identifiers unchanged during repository relocation.

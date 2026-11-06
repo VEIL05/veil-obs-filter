@@ -30,7 +30,7 @@ Microsoft DirectML의 별도 조건은 그대로 적용됩니다. Windows/Xbox �
 마세요. 모듈을 별도 DLL로 둔 구현 사실만으로 모든 형태의 재배포에 대한 라이선스
 호환성이 입증되는 것은 아닙니다.
 
-공개 설치 파일은 [GitHub Releases](https://github.com/VEIL05/veil-obs-filter/releases)에서
+공개 설치 파일은 [GitHub Releases](https://github.com/ttaem00/CVA-VEIL-OBS-Filter/releases)에서
 제공합니다. 각 버전에는 같은 태그의 VEIL 소스 ZIP과 파일 확인용 SHA-256 목록을
 함께 제공합니다. 소스 ZIP에는 원본 소스 아카이브 네 개와 통합 코드·패치·빌드 및
 설치 스크립트가 포함됩니다. 원본 모델·외부 의존성의 고정 출처와 추가 빌드 자료는
