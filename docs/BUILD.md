@@ -3,6 +3,9 @@
 These instructions target Windows x64 and OBS Studio 33.0.1 installed at
 `C:\Program Files\obs-studio`. Run PowerShell from the repository root. Paths are
 relative to the checkout, so it does not need a particular drive or folder name.
+An official OBS 33.0.1 portable ZIP extracted to an owned development directory
+can supply the runtime instead. This does not install OBS or read a user profile.
+Keep the existing installed OBS and its settings separate from build outputs.
 
 ## Prerequisites
 
@@ -36,6 +39,26 @@ A digest mismatch stops preparation before extraction.
 import library and small generated header inside `third_party/obs-sdk`. It writes
 a local provenance record under `work/build-tools`; it does not modify OBS.
 If OBS or LLVM-MinGW is absent, the script reports the missing path.
+
+For an extracted portable runtime, pass the same root to SDK preparation, build
+and both rendering checks. Obtain the x64 ZIP from the official
+[OBS 33.0.1 release](https://github.com/obsproject/obs-studio/releases/tag/33.0.1)
+and verify its release SHA-256 before extraction. The commands below use the
+directory containing `bin/64bit/obs.dll`; they do not start the OBS application.
+
+```powershell
+$obsRoot = '<owned directory>/obs-33.0.1'
+./third_party/toolchain/python-tools/Scripts/python.exe ./scripts/build/prepare_sdk.py --obs-root $obsRoot
+./build.ps1 -ObsRoot $obsRoot
+./tests/run-gpu-smoke.ps1 -ObsRoot $obsRoot -PresetPath ./presets/neutral.json -Width 1280 -Height 720 -OutputDirectory ./work/gpu-check
+./tests/run-background-smoke.ps1 -ObsRoot $obsRoot -Width 1280 -Height 720 -OutputDirectory ./work/background-check
+```
+
+The independent source repository remains
+[VEIL05/veil-obs-filter](https://github.com/VEIL05/veil-obs-filter).
+Use an owned issue checkout for changes and a fresh destination for each release
+candidate. A local candidate, a published release and an installed plugin are
+separate results; building a candidate does not update either of the latter.
 
 The scripts locate the checkout from their own paths. They can be invoked from
 another working directory by using the full script path. Download caches and
@@ -124,3 +147,34 @@ recorded hashes. See [dependency sources](DEPENDENCY-SOURCES.md) for the exact
 archives, integration patches, additional dependency registries, original model
 checkpoint/exporter references and rebuild boundaries. [LICENSING.md](LICENSING.md)
 explains module and asset scopes, including DirectML's separate terms.
+
+## Current PR merge-ref validation
+
+After committing and pushing the owned issue branch and opening its PR, provide
+`VEIL_OBS_ROOT` in this process for the verified OBS 33.0.1 runtime, then run:
+
+```powershell
+$env:VEIL_OBS_ROOT = '<verified OBS 33.0.1 root>'
+$env:VEIL_VALIDATION_TEMP_ROOT = '<existing issued short product-test temp directory>'
+pwsh.exe -NoProfile -File ./scripts/Test-PrValidationGate.ps1 -Root $PWD -MaxTotalSeconds 600 -ChildTimeoutSeconds 120
+```
+
+The gate checks the current PR head, canonical main, both fetched merge-ref
+parents and exact HEAD/merge tree equality before running the normal build,
+CTest, neutral-preset check, installer build and isolated `--self-test`. It checks
+source and PR identities again afterwards. A mismatch requires normal additive
+integration and another validation. Its only Git write is fetching this exact
+PR merge ref into FETCH_HEAD; it never switches branches, stages files or creates
+worktrees. Tracked and untracked source changes reject the run. The official
+bootstrap expansion under `third_party/obs-sdk/obs-studio-33.0.1/` is the one
+explicit untracked exception. The existing bootstrap's `--verify-sdk-only` mode
+checks the pinned archive SHA, exact SDK file names and every file's bytes,
+without downloading or extracting anything. The gate compares a name/SHA
+fingerprint before and after the build and reports the untracked file count,
+without claiming a completely clean checkout or deleting dependency sources.
+Run outputs use a new child of `VEIL_VALIDATION_TEMP_ROOT`, or ignored
+`work/pr-validation` when unset, and existing build outputs. Use the issued short
+temp path for a deeply nested checkout: the .NET Framework installer's isolated
+self-test creates its own nested staging/backup directories and obeys MAX_PATH.
+No interactive installer, OBS application or user profile is opened. A passing
+gate does not publish a release or update an installed plugin.

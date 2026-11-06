@@ -1,4 +1,5 @@
 """Prepare an import library from the installed OBS ABI, without changing OBS."""
+import argparse
 import hashlib
 import json
 import pathlib
@@ -8,14 +9,17 @@ import pefile
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SDK = ROOT / "third_party/obs-sdk"
-OBS_DLL = pathlib.Path("C:/Program Files/obs-studio/bin/64bit/obs.dll")
 TOOLCHAIN = ROOT / "third_party/toolchain/llvm-mingw-20261020-ucrt-x86_64"
 
 def main():
-    for required in (OBS_DLL, TOOLCHAIN / "bin/llvm-dlltool.exe"):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--obs-root", type=pathlib.Path, default=pathlib.Path("C:/Program Files/obs-studio"))
+    args = parser.parse_args()
+    obs_dll = args.obs_root.resolve() / "bin/64bit/obs.dll"
+    for required in (obs_dll, TOOLCHAIN / "bin/llvm-dlltool.exe"):
         if not required.is_file():
             raise RuntimeError(f"Missing build input: {required}")
-    pe = pefile.PE(str(OBS_DLL), fast_load=False)
+    pe = pefile.PE(str(obs_dll), fast_load=False)
     if pe.FILE_HEADER.Machine != 0x8664:
         raise RuntimeError("Expected an x64 OBS DLL")
     symbols = sorted(x.name.decode("ascii") for x in pe.DIRECTORY_ENTRY_EXPORT.symbols if x.name)
@@ -30,7 +34,7 @@ def main():
         "// Generated for the OBS 33.0.1 public headers. Not an OBS installation configuration.\n"
         "#pragma once\n#define OBS_RELEASE_CANDIDATE 0\n#define OBS_BETA 0\n", encoding="ascii")
     evidence = {
-        "dll": str(OBS_DLL), "sha256": hashlib.sha256(OBS_DLL.read_bytes()).hexdigest(),
+        "dll": str(obs_dll), "sha256": hashlib.sha256(obs_dll.read_bytes()).hexdigest(),
         "machine": "x86_64", "exports": len(symbols),
         "source_headers": "https://github.com/obsproject/obs-studio/tree/33.0.1/libobs",
         "import_library": str(libdir / "libobs.dll.a"),

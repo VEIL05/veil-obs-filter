@@ -343,13 +343,15 @@ namespace TrueitemInstaller
             installer = new PluginInstaller(Path.Combine(programData, "obs-studio", "plugins", PluginInstaller.PluginName),
                 Path.Combine(programData, "TRUEITEM-OBS-Beauty"), false);
             bool highContrast = SystemInformation.HighContrast;
-            ink = highContrast ? SystemColors.WindowText : Color.FromArgb(30, 34, 48);
-            muted = highContrast ? SystemColors.WindowText : Color.FromArgb(83, 90, 109);
-            accent = highContrast ? SystemColors.Highlight : Color.FromArgb(64, 59, 104);
-            accentInk = highContrast ? SystemColors.HighlightText : Color.White;
-            BackColor = highContrast ? SystemColors.Window : Color.FromArgb(247, 248, 251);
+            ink = highContrast ? SystemColors.WindowText : Color.FromArgb(24, 38, 53);
+            muted = highContrast ? SystemColors.WindowText : Color.FromArgb(89, 101, 114);
+            accent = highContrast ? SystemColors.Highlight : Color.FromArgb(24, 38, 53);
+            accentInk = highContrast ? SystemColors.HighlightText : Color.FromArgb(250, 245, 235);
+            BackColor = highContrast ? SystemColors.Window : Color.FromArgb(250, 245, 235);
             ForeColor = ink;
-            Text = "VEIL 설치";
+            Text = "VEIL OBS Filter 설치";
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("VEIL.Brand.ico"))
+            using (Icon icon = new Icon(stream)) Icon = (Icon)icon.Clone();
             ClientSize = new Size(680, 480);
             MinimumSize = new Size(696, 519);
             FormBorderStyle = FormBorderStyle.Sizable;
@@ -372,11 +374,19 @@ namespace TrueitemInstaller
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 46));
             Controls.Add(layout);
 
-            TableLayoutPanel header = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Top, ColumnCount = 1, Margin = Padding.Empty, Padding = Padding.Empty };
-            Label brand = new Label { Text = "VEIL", Font = new Font(Font.FontFamily, 32F, FontStyle.Bold), AutoSize = true, Margin = new Padding(0, 0, 0, 4), ForeColor = ink };
+            TableLayoutPanel header = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Top, ColumnCount = 2, Margin = Padding.Empty, Padding = Padding.Empty };
+            header.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            PictureBox brandMark = new PictureBox { Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Zoom, Margin = new Padding(0, 4, 20, 0), TabStop = false, AccessibleRole = AccessibleRole.None };
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("VEIL.Brand.png"))
+            using (Image image = Image.FromStream(stream)) brandMark.Image = new Bitmap(image);
+            Disposed += delegate { brandMark.Image.Dispose(); if (Icon != null) Icon.Dispose(); };
+            TableLayoutPanel brandText = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Top, ColumnCount = 1, Margin = Padding.Empty, Padding = Padding.Empty };
+            Label brand = new Label { Text = "VEIL OBS Filter", Font = new Font(Font.FontFamily, 26F, FontStyle.Bold), AutoSize = true, Margin = new Padding(0, 0, 0, 4), ForeColor = ink };
             Label summary = new Label { Text = "OBS용 얼굴 보정 · 배경 제거", AutoSize = true, Margin = new Padding(2, 0, 0, 8), ForeColor = ink };
             Label version = new Label { Text = "버전 0.4.7", Font = new Font(Font.FontFamily, 9F), AutoSize = true, ForeColor = muted, Margin = new Padding(2, 0, 0, 0) };
-            header.Controls.Add(brand); header.Controls.Add(summary); header.Controls.Add(version);
+            brandText.Controls.Add(brand); brandText.Controls.Add(summary); brandText.Controls.Add(version);
+            header.Controls.Add(brandMark, 0, 0); header.Controls.Add(brandText, 1, 0);
             layout.Controls.Add(header, 0, 0);
 
             TableLayoutPanel card = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Top, ColumnCount = 2, RowCount = 2, Padding = new Padding(18, 18, 18, 18), Margin = Padding.Empty, BackColor = highContrast ? SystemColors.Window : Color.White };

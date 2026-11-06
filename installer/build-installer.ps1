@@ -3,6 +3,11 @@ $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path -Parent $PSScriptRoot
 if (-not $PayloadDirectory) { $PayloadDirectory = Join-Path $taskRoot 'dist/obs-trueitem-beauty' }
 $PayloadDirectory = (Resolve-Path -LiteralPath $PayloadDirectory).Path
+$brandIcon = Join-Path $taskRoot 'assets/brand/obs-filter.ico'
+$brandImage = Join-Path $taskRoot 'assets/brand/obs-filter.png'
+foreach ($brandFile in @($brandIcon, $brandImage)) {
+    if (-not (Test-Path -LiteralPath $brandFile -PathType Leaf)) { throw "Missing brand asset: $brandFile" }
+}
 $workDir = Join-Path $PSScriptRoot 'work'
 $outDir = if ($OutputDirectory) { [IO.Path]::GetFullPath($OutputDirectory) } else { Join-Path $PSScriptRoot 'out' }
 New-Item -ItemType Directory -Path $workDir, $outDir -Force | Out-Null
@@ -17,13 +22,15 @@ $sha = Join-Path $workDir 'payload.sha256'
 $compiler = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319/csc.exe'
 if (-not (Test-Path -LiteralPath $compiler)) { throw '.NET Framework C# compiler is unavailable.' }
 $output = Join-Path $outDir 'VEIL-OBS-Filter-Setup.exe'
-& $compiler /nologo /noconfig /target:winexe /platform:x64 /optimize+ "/out:$output" "/resource:$zip,Trueitem.Payload.zip" "/resource:$sha,Trueitem.Payload.sha256" /reference:System.dll /reference:System.Core.dll /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll (Join-Path $PSScriptRoot 'Installer.cs')
+& $compiler /nologo /noconfig /target:winexe /platform:x64 /optimize+ "/out:$output" "/win32icon:$brandIcon" "/resource:$brandIcon,VEIL.Brand.ico" "/resource:$brandImage,VEIL.Brand.png" "/resource:$zip,Trueitem.Payload.zip" "/resource:$sha,Trueitem.Payload.sha256" /reference:System.dll /reference:System.Core.dll /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll (Join-Path $PSScriptRoot 'Installer.cs')
 if ($LASTEXITCODE -ne 0) { throw "Installer compilation failed ($LASTEXITCODE)" }
 $record = [ordered]@{
     installer = $output
     installerSHA256 = (Get-FileHash -LiteralPath $output -Algorithm SHA256).Hash.ToLowerInvariant()
     payload = $PayloadDirectory
     payloadSHA256 = [IO.File]::ReadAllText($sha)
+    brandIconSHA256 = (Get-FileHash -LiteralPath $brandIcon -Algorithm SHA256).Hash.ToLowerInvariant()
+    brandImageSHA256 = (Get-FileHash -LiteralPath $brandImage -Algorithm SHA256).Hash.ToLowerInvariant()
     builtUTC = [DateTime]::UtcNow.ToString('o')
 }
 $record | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $outDir 'build-proof.json') -Encoding UTF8

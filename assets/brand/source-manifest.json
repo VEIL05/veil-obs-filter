@@ -1,0 +1,34 @@
+{
+  "schema": "veil.family-asset-copy.v1",
+  "product": "obs-filter",
+  "canonical_repository": "ttaem00/chzz-vod-analyzer",
+  "canonical_directory": "docs/design/cva-brand-v1",
+  "generator": "build_veil_identity.py",
+  "generator_sha256": "bdbe3b2243b39479a1ea74352990961e27ede53f98c3c4c7a24e252f6c79f055",
+  "files": [
+    {
+      "path": "obs-filter-color.svg",
+      "sha256": "5bcac15d9652c700a67d75e072eea6c041a8330c3f71aee2b3cd3297e202d47c"
+    },
+    {
+      "path": "obs-filter-micro.svg",
+      "sha256": "061032716f0c9db9187e0d74811a4bb4fddb51da7ad6d8ca366579695daf624b"
+    },
+    {
+      "path": "obs-filter-mono.svg",
+      "sha256": "ffd3bf1958915c6a8e730fea6e7e52417950a5057e75d0b61fac49615c6489af"
+    },
+    {
+      "path": "obs-filter-reverse.svg",
+      "sha256": "a919ff2c1b3734d6d96ba5c0217cbc30f365c0a48f6d331e300ebe4adbfea009"
+    },
+    {
+      "path": "obs-filter.ico",
+      "sha256": "3ee66a916c8d8b149b4f70823c5f19721459337dc57b21ad40c64d25f844318e"
+    },
+    {
+      "path": "obs-filter.png",
+      "sha256": "a46a0ff86b3095f3f3b65de9e1707ea2ca61f39ee5ec049c27636e6fc49c4803"
+    }
+  ]
+}

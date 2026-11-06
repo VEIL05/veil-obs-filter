@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(OBS_SDK "${CMAKE_CURRENT_SOURCE_DIR}/third_party/obs-sdk")
+set(VEIL_OBS_ROOT "C:/Program Files/obs-studio" CACHE PATH "OBS Studio x64 runtime for local checks")
 set(ORT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/onnxruntime")
 find_package(Threads REQUIRED)
 
@@ -26,7 +27,7 @@ target_link_options(trueitem_build_options INTERFACE -static)
 add_library(OBS::libobs SHARED IMPORTED)
 set_target_properties(OBS::libobs PROPERTIES
   IMPORTED_IMPLIB "${OBS_SDK}/lib/libobs.dll.a"
-  IMPORTED_LOCATION "C:/Program Files/obs-studio/bin/64bit/obs.dll"
+  IMPORTED_LOCATION "${VEIL_OBS_ROOT}/bin/64bit/obs.dll"
   INTERFACE_INCLUDE_DIRECTORIES "${OBS_SDK}/obs-studio-33.0.1/libobs;${OBS_SDK}/generated")
 
 add_library(trueitem_core STATIC src/beauty_core.cpp)
